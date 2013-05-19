@@ -57,8 +57,16 @@ function format(args) {
   return util.format.apply(util, args);
 }
 
+var lastLineLength = 0;
+var currLineLength = 0;
+
 function write(msg) {
   msg = msg || '';
+  currLineLength += colors.stripColors(msg).trim('\n').length;
+  if (msg.search(/\n$/) !== -1) {
+	lastLineLength = currLineLength;
+	currLineLength = 0;
+  }
   // Actually write output.
   if (!log.muted && !suppressOutput) {
 	hasLogged = true;
@@ -91,16 +99,21 @@ log.writeln = function() {
 log.warn = function() {
   var msg = format(arguments);
   if (arguments.length > 0) {
-	writeln('>> '.red + msg.trim().replace(/\n/g, '\n>> '.red));
+	writeln('>> '.yellow + msg.trim().replace(/\n/g, '\n>> '.yellow));
   } else {
-	writeln('ERROR'.red);
+	writeln('WARN'.yellow);
   }
   return log;
 };
 
 
 log.error = function() {
-  log.warn.apply(log, arguments);
+  var msg = format(arguments);
+  if (arguments.length > 0) {
+	writeln('>> '.red + msg.trim().replace(/\n/g, '\n>> '.red));
+  } else {
+	writeln('ERROR'.red);
+  }
   return log;
 };
 
@@ -141,6 +154,19 @@ log.fail = function() {
   var msg = format(arguments);
   writeln(msg.red);
   return log;
+};
+
+log.line = function(chr) {
+	chr = chr || '-';
+	for (var i = 0; i < lastLineLength; i++) {
+		write(chr);
+	}
+	write('\n');
+	return log;
+};
+
+log.doubleline = function() {
+	return log.line('=');
 };
 
 
