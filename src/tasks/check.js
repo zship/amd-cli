@@ -5,10 +5,10 @@ var map = require('mout/object/map');
 var flatten = require('mout/array/flatten');
 var unique = require('mout/array/unique');
 
-var findBrokenDependencies = require('amd-tools/src/tasks/findBrokenDependencies');
-var findCircularDependencies = require('amd-tools/src/tasks/findCircularDependencies');
-var Modules = require('amd-tools/src/util/Modules');
-var Cycles = require('amd-tools/src/util/Cycles');
+var findBrokenDependencies = require('amd-tools/tasks/findBrokenDependencies');
+var findCircularDependencies = require('amd-tools/tasks/findCircularDependencies');
+var Modules = require('amd-tools/util/Modules');
+var Cycles = require('amd-tools/util/Cycles');
 
 var log = require('../log');
 

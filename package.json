@@ -12,14 +12,16 @@
 	"bin": {
 		"amd-tools": "bin/amd-tools"
 	},
+	"preferGlobal": true,
 	"dependencies": {
-		"amd-tools": "0.1.x",
+		"amd-tools": "0.x",
 		"mout": "0.x",
-		"glob": "3.2.x",
 		"colors": "0.6.x",
 		"nopt": "2.1.x"
 	},
 	"keywords": [
-		"amd"
+		"amd",
+		"diagnostic",
+		"cli"
 	]
 }
