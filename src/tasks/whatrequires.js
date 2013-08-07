@@ -3,8 +3,8 @@
 
 var path = require('path');
 
-var Modules = require('amd-tools/util/Modules');
-var getDependencies = require('amd-tools/tasks/getDependencies');
+var getFile = require('amd-tools/modules/getFile');
+var getDependencies = require('amd-tools/getDependencies');
 
 var log = require('../log');
 
@@ -14,7 +14,7 @@ var whatrequires = function(needle, haystack, rjsconfig) {
 		file = path.resolve(file);
 
 		var deps = getDependencies(file).map(function(dep) {
-			return Modules.getFile(dep, path.dirname(file), rjsconfig);
+			return getFile(dep, path.dirname(file), rjsconfig);
 		});
 
 		return deps.some(function(dep) {

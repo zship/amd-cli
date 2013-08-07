@@ -5,13 +5,14 @@ var fs = require('fs');
 var path = require('path');
 
 var nopt = require('nopt');
-var unique = require('mout/array/unique');
-var loadConfig = require('amd-tools/util/loadConfig');
-var getDependencyGraph = require('amd-tools/tasks/getDependencyGraph');
-var Modules = require('amd-tools/util/Modules');
+var Levenshtein = require('levenshtein');
+var getConfigRecursive = require('amd-tools/getConfigRecursive');
+var getName = require('amd-tools/modules/getName');
+var mixin = require('mout/object/deepMixIn');
 
 var log = require('./log');
 var util = require('./util');
+var findup = require('./util/findup');
 var deplist = require('./tasks/deplist');
 var check = require('./tasks/check');
 var whatrequires = require('./tasks/whatrequires');
@@ -82,43 +83,59 @@ var cli = function() {
 		}
 	};
 
-	var parsed = util.parseOpts(opts, args, 0);
-	log.opts.verbose = parsed.verbose;
+	opts = util.parseOpts(opts, args, 0);
+	log.opts.verbose = opts.verbose;
 
-	var rjsconfig;
-	if (parsed.config) {
-		if (!fs.existsSync(parsed.config)) {
-			log.error('--config file "' + path.relative(process.cwd(), parsed.config) + '" was not found!');
+	var rjsconfig = {};
+	if (opts.config) {
+		if (!fs.existsSync(opts.config)) {
+			log.error('--config file "' + path.relative(process.cwd(), opts.config) + '" was not found!');
 			return;
 		}
-		rjsconfig = loadConfig({
-			mainConfigFile: parsed.config
+		rjsconfig = getConfigRecursive({
+			mainConfigFile: opts.config
 		});
 	}
-	else {
-		rjsconfig = {
-			baseUrl: parsed['base-url']
-		};
+
+	if (opts['base-url']) {
+		rjsconfig.baseUrl = opts['base-url'];
 	}
 
-	if (!parsed['entry-point']) {
-		parsed['entry-point'] = process.cwd();
+	var dotAmdConfigFile = findup('.amdconfig');
+	if (dotAmdConfigFile) {
+		opts['entry-point'] = path.dirname(dotAmdConfigFile);
+		var dotAmdConfig = getConfigRecursive(dotAmdConfigFile);
+		rjsconfig = mixin({}, dotAmdConfig, rjsconfig);
 	}
 
-	rjsconfig.baseUrl = path.resolve(parsed['entry-point'], rjsconfig.baseUrl);
+	if (opts['entry-point']) {
+		rjsconfig.baseUrl = path.resolve(opts['entry-point'], rjsconfig.baseUrl);
+	}
+
 	if (!fs.existsSync(rjsconfig.baseUrl)) {
-		log.error('RequireJS baseUrl (prefixed with --entry-point, if passed) does not resolve to a real path!');
-		log.error('tried: ' + rjsconfig.baseUrl);
+		log.error('RequireJS baseUrl "' + rjsconfig.baseUrl + '" does not resolve to a real path!');
 		return;
 	}
 
-	var remain = parsed.argv.remain;
+	var remain = opts.argv.remain;
 	var _process = function(files) {
-		return util.processFileArgs(files, rjsconfig, parsed.recursive);
+		return util.processFileArgs(files, rjsconfig, opts.recursive);
 	};
 
 	var files;
 	switch(task) {
+		case 'resolve':
+			files = _process(remain);
+			log.writeln(files.join('\n'));
+		break;
+		case 'id':
+			files = _process(remain);
+			log.writeln(
+				files.map(function(file) {
+					return getName(file, rjsconfig);
+				}).join('\n')
+			);
+		break;
 		case 'check':
 			files = _process(remain);
 			check(files, rjsconfig);
@@ -131,6 +148,22 @@ var cli = function() {
 			var needle = util.processFileArgs(remain[0], rjsconfig, false)[0];
 			var haystack = _process(remain.slice(1));
 			whatrequires(needle, haystack, rjsconfig);
+		break;
+		default:
+			log.error('amd-tools: \'' + task + '\' is not an amd-tools command.');
+			var suggest = [];
+			['resolve', 'id', 'check', 'deplist', 'whatrequires'].forEach(function(cmd) {
+				var l = new Levenshtein(task, cmd).distance;
+				if (l < 5) {
+					suggest.push(cmd);
+				}
+			});
+			if (suggest.length) {
+				log.error('\nDid you mean:');
+				suggest.forEach(function(sugg) {
+					log.error('  ' + sugg);
+				});
+			}
 		break;
 	}
 

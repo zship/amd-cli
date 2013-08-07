@@ -112,7 +112,7 @@ log.warn = function() {
 log.error = function() {
 	var msg = format(arguments);
 	if (arguments.length > 0) {
-		writeln('>> '.red + msg.trim().replace(/\n/g, '\n>> '.red), process.stderr);
+		writeln('>> '.red + msg.replace(/\n/g, '\n>> '.red), process.stderr);
 	} else {
 		writeln('ERROR'.red, process.stderr);
 	}

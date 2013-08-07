@@ -3,16 +3,16 @@
 
 var path = require('path');
 
-var getDependencies = require('amd-tools/tasks/getDependencies');
+var getDependencies = require('amd-tools/getDependencies');
 require('colors');
 
 var log = require('../log');
 
 
-var deplist = function(files) {
+var deplist = function(files, rjsconfig) {
 	files.forEach(function(file) {
 		log.verbose.write('\n' + path.relative(process.cwd(), file).cyan + '\n');
-		var deps = getDependencies(file);
+		var deps = getDependencies(file, rjsconfig);
 		if (!deps.length) {
 			log.verbose.write('(None)\n'.cyan);
 		}

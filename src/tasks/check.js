@@ -5,10 +5,12 @@ var map = require('mout/object/map');
 var flatten = require('mout/array/flatten');
 var unique = require('mout/array/unique');
 
-var findBrokenDependencies = require('amd-tools/tasks/findBrokenDependencies');
-var findCircularDependencies = require('amd-tools/tasks/findCircularDependencies');
-var Modules = require('amd-tools/util/Modules');
-var Cycles = require('amd-tools/util/Cycles');
+var findBrokenDependencies = require('amd-tools/findBrokenDependencies');
+var findCircularDependencies = require('amd-tools/findCircularDependencies');
+var getName = require('amd-tools/modules/getName');
+var rotated = require('amd-tools/cycles/rotated');
+var rotateUntil = require('amd-tools/cycles/rotateUntil');
+var contains = require('amd-tools/cycles/contains');
 
 var log = require('../log');
 
@@ -21,7 +23,9 @@ var check = function(filePool, rjsconfig) {
 
 	log.write('Running broken dependency check...');
 
-	var broken = findBrokenDependencies(filePool, rjsconfig);
+	var broken = flatten(filePool.map(function(file) {
+		return findBrokenDependencies(file, rjsconfig);
+	}), true);
 	broken = broken.filter(function(dep) {
 		return dep.declared.search(/http(s*):/) === -1;
 	});
@@ -64,7 +68,7 @@ var check = function(filePool, rjsconfig) {
 
 		circulars = circulars.map(function shortNames(loop) {
 			return loop.map(function(file) {
-				return Modules.getId(file, rjsconfig);
+				return getName(file, rjsconfig);
 			});
 		});
 
@@ -76,13 +80,13 @@ var check = function(filePool, rjsconfig) {
 
 			circulars.forEach(function(loop) {
 				for (var i = 0; i < loop.length; i++) {
-					var rotated = Cycles.rotated(loop, i).slice(0, 2);
-					var key = rotated.join(',');
+					var rotatedCopy = rotated(loop, i).slice(0, 2);
+					var key = rotatedCopy.join(',');
 					if (groups[key]) {
 						continue;
 					}
 					groups[key] = circulars.filter(function(otherLoop) {
-						return Cycles.contains(rotated, otherLoop);
+						return contains(rotatedCopy, otherLoop);
 					});
 				}
 			});
@@ -98,7 +102,7 @@ var check = function(filePool, rjsconfig) {
 					return b.length - a.length;
 				})
 				.map(function alignToGroupStart(loop) {
-					return Cycles.rotateUntil(loop, function(rotated) {
+					return rotateUntil(loop, function(rotated) {
 						return rotated[0] === group[0];
 					});
 				});
@@ -139,7 +143,7 @@ var check = function(filePool, rjsconfig) {
 					var ret = [];
 					var i = 0;
 					while(ret[1] !== mod.name) {
-						ret = Cycles.rotated(loop, i);
+						ret = rotated(loop, i);
 						i++;
 					}
 					count[ret[0]] = count[ret[0]] || 0;
@@ -165,7 +169,7 @@ var check = function(filePool, rjsconfig) {
 				var sorted = loop.slice().sort(function(a, b) {
 					return occurrenceCount(b) - occurrenceCount(a);
 				});
-				return Cycles.rotateUntil(loop, function(rotated) {
+				return rotateUntil(loop, function(rotated) {
 					return rotated[0] === sorted[0];
 				});
 			})

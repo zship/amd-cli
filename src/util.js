@@ -9,8 +9,8 @@ var forOwn = require('mout/object/forOwn');
 var isArray = require('mout/lang/isArray');
 var toArray = require('mout/lang/toArray');
 var unique = require('mout/array/unique');
-var getDependencyGraph = require('amd-tools/tasks/getDependencyGraph');
-var Modules = require('amd-tools/util/Modules');
+var getDependencyGraph = require('amd-tools/getDependencyGraph');
+var getFile = require('amd-tools/modules/getFile');
 require('colors');
 
 var log = require('./log');
@@ -41,8 +41,8 @@ util.fileOrModuleId = function(file, rjsconfig) {
 	if (fs.existsSync(file)) {
 		return file;
 	}
-	var resolved = Modules.getFile(file, process.cwd(), rjsconfig);
-	if (!resolved) {
+	var resolved = getFile(file, process.cwd(), rjsconfig);
+	if (!resolved || !fs.existsSync(resolved)) {
 		log.warn('Module ID "' + file + '" could not be resolved.');
 	}
 	return resolved;
@@ -57,13 +57,9 @@ util.processFileArgs = function(files, rjsconfig, recursive) {
 		files = [files];
 	}
 
-	//hueristic: folks probably won't type more than 10 module ids, so assume
-	//they're (shell-expanded) file paths if so
-	if (files.length < 10) {
-		files = files.map(function(file) {
-			return util.fileOrModuleId(file, rjsconfig);
-		});
-	}
+	files = files.map(function(file) {
+		return util.fileOrModuleId(file, rjsconfig);
+	});
 
 	if (recursive) {
 		var flattened = [];
