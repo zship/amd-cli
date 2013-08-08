@@ -4,61 +4,49 @@
 var fs = require('fs');
 var path = require('path');
 
-var nopt = require('nopt');
-var forOwn = require('mout/object/forOwn');
+var glob = require('glob');
 var isArray = require('mout/lang/isArray');
-var toArray = require('mout/lang/toArray');
 var unique = require('mout/array/unique');
+var difference = require('mout/array/difference');
 var getDependencyGraph = require('amd-tools/getDependencyGraph');
-var getFile = require('amd-tools/modules/getFile');
+var resolve = require('amd-tools/modules/resolve');
 require('colors');
 
 var log = require('./log');
 
 
-var util = {};
-
-
-util.parseOpts = function(opts) {
-	var knownOpts = {};
-	var shortHands = {};
-
-	forOwn(opts, function(obj, key) {
-		knownOpts[key] = obj.type;
-		if (obj.shortHand) {
-			shortHands[obj.shortHand] = '--' + key;
-		}
-	});
-
-	var args = toArray(arguments);
-	args.shift();
-	args = [knownOpts, shortHands].concat(args);
-	return nopt.apply(undefined, args);
-};
-
-
-util.fileOrModuleId = function(file, rjsconfig) {
-	if (fs.existsSync(file)) {
-		return file;
-	}
-	var resolved = getFile(file, process.cwd(), rjsconfig);
-	if (!resolved || !fs.existsSync(resolved)) {
-		log.warn('Module ID "' + file + '" could not be resolved.');
-	}
-	return resolved;
-};
-
-
 //files may be either file paths or module ids.  turn module ids into file
 //paths. if recursive is `true`, expand each module's full dependency graph
 //and add into the list.
-util.processFileArgs = function(files, rjsconfig, recursive) {
+var resolveFileArgs = function(files, rjsconfig, recursive) {
 	if (!isArray(files)) {
 		files = [files];
 	}
 
+	var dirs = files.filter(function (file) {
+		return fs.statSync(file).isDirectory();
+	});
+
+	dirs.forEach(function(dir) {
+		var absdir = path.resolve(dir);
+		log.verbose.writeln('Expanding directory "' + dir + '" to "' + absdir + '/**/*.js"');
+		Array.prototype.push.apply(files, glob.sync(absdir + '/**/*.js'));
+	});
+
+	files = difference(files, dirs);
+	files = unique(files);
+
 	files = files.map(function(file) {
-		return util.fileOrModuleId(file, rjsconfig);
+		if (fs.existsSync(file)) {
+			// relative file paths without a leading '.' will be interpreted as
+			// module IDs by resolve(), so deal with them first
+			return path.resolve(file);
+		}
+		var resolved = resolve(file, process.cwd(), rjsconfig);
+		if (!resolved || !fs.existsSync(resolved)) {
+			log.warn('"' + file + '" could not be resolved.');
+		}
+		return resolved;
 	});
 
 	if (recursive) {
@@ -82,9 +70,9 @@ util.processFileArgs = function(files, rjsconfig, recursive) {
 	});
 
 	if (log.opts.verbose) {
-		log.verbose.writeln('Expanded Files:'.cyan);
+		log.verbose.writeln('Expanded Files:');
 		files.forEach(function(file) {
-			log.verbose.writeln(path.relative(process.cwd(), file).cyan);
+			log.verbose.writeln(path.relative(process.cwd(), file));
 		});
 		log.verbose.write('\n');
 	}
@@ -100,4 +88,4 @@ util.processFileArgs = function(files, rjsconfig, recursive) {
 };
 
 
-module.exports = util;
+module.exports = resolveFileArgs;

@@ -7,19 +7,37 @@ var unique = require('mout/array/unique');
 
 var findBrokenDependencies = require('amd-tools/findBrokenDependencies');
 var findCircularDependencies = require('amd-tools/findCircularDependencies');
-var getName = require('amd-tools/modules/getName');
+var normalize = require('amd-tools/modules/normalize');
 var rotated = require('amd-tools/cycles/rotated');
 var rotateUntil = require('amd-tools/cycles/rotateUntil');
 var contains = require('amd-tools/cycles/contains');
 
-var log = require('../log');
+var parseOpts = require('./util/parseOpts');
+var parseConfig = require('./util/parseConfig');
+var resolveFileArgs = require('./util/resolveFileArgs');
+var log = require('./util/log');
 
 
-var check = function(filePool, rjsconfig) {
+var _opts = {
+	'recursive': {
+		type: Boolean,
+		shortHand: 'R',
+		description: 'Recurse into the full dependency graph of each passed <module>, adding each dependency into the <module> list'
+	}
+};
+
+
+var check = function() {
+	var args = process.argv.slice(3);
+	var opts = parseOpts(_opts, args, 0);
+
+	var rjsconfig = parseConfig();
+	var filePool = resolveFileArgs(opts.argv.remain, rjsconfig, opts.recursive);
+
 	log.write('Checking ' + filePool.length + ' files\n\n');
 
-	log.verbose.writeln('RequireJS configuration:'.cyan);
-	log.verbose.write(JSON.stringify(rjsconfig, false, 4).cyan + '\n\n');
+	log.verbose.writeln('RequireJS configuration:');
+	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
 
 	log.write('Running broken dependency check...');
 
@@ -64,11 +82,11 @@ var check = function(filePool, rjsconfig) {
 	else {
 		log.warn();
 		log.doubleline();
-		log.write(circulars.length + ' circular dependencies (' + '--verbose'.cyan + ' for more info)\n\n');
+		log.write(circulars.length + ' circular dependencies (' + '--verbose' + ' for more info)\n\n');
 
 		circulars = circulars.map(function shortNames(loop) {
 			return loop.map(function(file) {
-				return getName(file, rjsconfig);
+				return normalize(file, rjsconfig);
 			});
 		});
 
@@ -191,7 +209,7 @@ var check = function(filePool, rjsconfig) {
 				log.write(mod.count + ' chains: ' + mod.name + '\n');
 				mod.paths.forEach(function(loop) {
 					var msg = '.. ' + loop.join(' -> ') + ' ..\n';
-					log.verbose.write(msg.cyan);
+					log.verbose.write(msg);
 				});
 				log.verbose.writeln();
 			});
@@ -214,7 +232,7 @@ var check = function(filePool, rjsconfig) {
 					log.writeln(loops.length + ' chains: ' + group.join(' -> '));
 					loops.forEach(function(loop) {
 						var msg = '.. ' + loop.join(' -> ') + ' ..\n';
-						log.verbose.write(msg.cyan);
+						log.verbose.write(msg);
 					});
 					log.verbose.writeln();
 				});

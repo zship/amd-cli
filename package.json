@@ -1,7 +1,7 @@
 {
 	"name": "amd-tools-cli",
 	"description": "Command-line interface for the amd-tools diagnostic library",
-	"version": "1.0.0-alpha",
+	"version": "1.0.0-alpha2",
 	"homepage": "https://github.com/zship/amd-tools-cli",
 	"author": "Zach Shipley <zach@zachshipley.com>",
 	"repository": {
@@ -14,11 +14,15 @@
 	},
 	"preferGlobal": true,
 	"dependencies": {
+		"glob": "3.x",
 		"amd-tools": "1.x",
 		"levenshtein": "1.x",
 		"mout": "0.x",
 		"colors": "0.6.x",
 		"nopt": "2.1.x"
+	},
+	"devDependencies": {
+		"node-amd-require": "0.x"
 	},
 	"keywords": [
 		"amd",

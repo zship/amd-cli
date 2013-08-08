@@ -237,6 +237,7 @@ Object.keys(log).filter(function(key) {
 	// IS NOT set.
 	log.verbose[key] = function() {
 		suppressOutput = !log.opts.verbose;
+		arguments[0] = arguments[0].cyan;
 		log[key].apply(log, arguments);
 		suppressOutput = false;
 		return log.verbose;
