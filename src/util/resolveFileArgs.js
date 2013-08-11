@@ -6,9 +6,11 @@ var path = require('path');
 
 var glob = require('glob');
 var isArray = require('mout/lang/isArray');
+var compact = require('mout/array/compact');
 var unique = require('mout/array/unique');
 var difference = require('mout/array/difference');
 var getDependencyGraph = require('amd-tools/getDependencyGraph');
+var dfs = require('amd-tools/graphs/dfs');
 var resolve = require('amd-tools/modules/resolve');
 require('colors');
 
@@ -24,7 +26,12 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 	}
 
 	var dirs = files.filter(function (file) {
-		return fs.statSync(file).isDirectory();
+		try {
+			return fs.statSync(file).isDirectory();
+		}
+		catch (e) {
+			return false; // non-existant file (likely a module ID)
+		}
 	});
 
 	dirs.forEach(function(dir) {
@@ -37,11 +44,6 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 	files = unique(files);
 
 	files = files.map(function(file) {
-		if (fs.existsSync(file)) {
-			// relative file paths without a leading '.' will be interpreted as
-			// module IDs by resolve(), so deal with them first
-			return path.resolve(file);
-		}
 		var resolved = resolve(file, process.cwd(), rjsconfig);
 		if (!resolved || !fs.existsSync(resolved)) {
 			log.warn('"' + file + '" could not be resolved.');
@@ -51,23 +53,18 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 
 	if (recursive) {
 		var flattened = [];
-		var _flattenGraph = function(node) {
-			flattened.push(node.file);
-			node.deps.forEach(function(child) {
-				_flattenGraph(child);
-			});
-		};
 
 		files.forEach(function(file) {
-			_flattenGraph(getDependencyGraph(file, rjsconfig));
+			var graph = getDependencyGraph(file, rjsconfig);
+			dfs(graph, function(node) {
+				flattened.push(node.file);
+			});
 		});
 
 		files = unique(flattened);
 	}
 
-	files = files.filter(function(file) {
-		return !!file;
-	});
+	files = compact(files);
 
 	if (log.opts.verbose) {
 		log.verbose.writeln('Expanded Files:');

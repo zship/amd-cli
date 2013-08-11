@@ -1,3 +1,15 @@
 #!/usr/bin/env node
 
+var path = require('path');
+require('node-amd-require')({
+	baseUrl: path.resolve(__dirname, '..'),
+	paths: {
+		'amd-tools': '../amd-tools/src'
+	}
+});
+Object.keys(require.cache).forEach(function(name) {
+	if (name.search('amd-tools/dist') !== -1) {
+		delete require.cache[name];
+	}
+});
 require('../src/amd-tools.js').cli();
