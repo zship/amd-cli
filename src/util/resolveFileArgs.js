@@ -44,7 +44,7 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 	files = unique(files);
 
 	files = files.map(function(file) {
-		var resolved = resolve(file, process.cwd(), rjsconfig);
+		var resolved = resolve(rjsconfig, process.cwd(), file);
 		if (!resolved || !fs.existsSync(resolved)) {
 			log.warn('"' + file + '" could not be resolved.');
 		}

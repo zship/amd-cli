@@ -19,7 +19,7 @@ var normalize = function() {
 	var files = resolveFileArgs(opts.argv.remain, rjsconfig);
 
 	files.forEach(function(file) {
-		log.writeln(_normalize(file, rjsconfig));
+		log.writeln(_normalize(rjsconfig, file));
 	});
 };
 

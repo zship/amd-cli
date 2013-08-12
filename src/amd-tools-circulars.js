@@ -45,7 +45,7 @@ var circulars = function() {
 
 		circulars = circulars.map(function shortNames(loop) {
 			return loop.map(function(file) {
-				return normalize(file, rjsconfig);
+				return normalize(rjsconfig, file);
 			});
 		});
 

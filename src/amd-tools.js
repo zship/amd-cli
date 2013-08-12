@@ -1,15 +1,21 @@
 'use strict';
 
 
+var path = require('path');
+var child = require('child_process');
+
+var glob = require('glob');
 var Levenshtein = require('levenshtein');
 
 var log = require('./util/log');
 var parseOpts = require('./util/parseOpts');
-var deplist = require('./amd-tools-deplist');
-var normalize = require('./amd-tools-normalize');
-var resolve = require('./amd-tools-resolve');
-var check = require('./amd-tools-check');
-var whatrequires = require('./amd-tools-whatrequires');
+
+
+var scripts = {};
+glob.sync(__dirname + '/**/amd-tools-*.js').forEach(function(file) {
+	var name = file.replace(/.*\/amd\-tools\-(\S*)\.js/, '$1');
+	scripts[name] = file;
+});
 
 
 var cli = function() {
@@ -27,39 +33,39 @@ var cli = function() {
 	opts = parseOpts(opts, args, 0);
 	log.opts.verbose = opts.verbose;
 
-	switch(task) {
-		case 'resolve':
-			resolve();
-		break;
-		case 'normalize':
-			normalize();
-		break;
-		case 'check':
-			check();
-		break;
-		case 'deplist':
-			deplist();
-		break;
-		case 'whatrequires':
-			whatrequires();
-		break;
-		default:
-			log.error('amd-tools: \'' + task + '\' is not an amd-tools command.');
-			var suggest = [];
-			['resolve', 'id', 'check', 'deplist', 'whatrequires'].forEach(function(cmd) {
-				var l = new Levenshtein(task, cmd).distance;
-				if (l < 5) {
-					suggest.push(cmd);
-				}
-			});
-			if (suggest.length) {
-				log.error('\nDid you mean:');
-				suggest.forEach(function(sugg) {
-					log.error('  ' + sugg);
-				});
-			}
-		break;
+	if (task === 'help') {
+		var term = opts.argv.remain[0];
+		var manpath = path.join(__dirname, '..', 'man');
+		if (term) {
+			manpath = path.join(manpath, 'amd-tools-' + term + '.1');
+		}
+		else {
+			manpath = path.join(manpath, 'amd-tools.1');
+		}
+		var conf = { customFds: [0, 1, 2] };
+		var man = child.spawn('man', [manpath], conf);
+		man.on('close', function() {});
 	}
+
+	if (Object.keys(scripts).indexOf(task) === -1) {
+		log.error('amd-tools: \'' + task + '\' is not an amd-tools command.');
+		var suggest = [];
+		Object.keys(scripts).forEach(function(cmd) {
+			var l = new Levenshtein(task, cmd).distance;
+			if (l < 5) {
+				suggest.push(cmd);
+			}
+		});
+		if (suggest.length) {
+			log.error('\nDid you mean:');
+			suggest.forEach(function(sugg) {
+				log.error('  ' + sugg);
+			});
+		}
+		return;
+	}
+
+	require(scripts[task])();
 
 };
 

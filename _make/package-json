@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+
+'use strict';
+
+
+var fs = require('fs');
+var path = require('path');
+var get = require('mout/object/get');
+
+var prop = process.argv[2];
+var json = path.resolve(__dirname, '..', 'package.json');
+json = fs.readFileSync(json, 'utf8');
+json = JSON.parse(json);
+process.stdout.write(get(json, prop));

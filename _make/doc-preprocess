@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+
+'use strict';
+
+
+var transform = function(contents) {
+
+	// Surround arguments in backticks. They can be unambiguously recognized so
+	// I don't want to do this manually.
+	var rOption = /([\s|\[\]])(\-\-?[a-zA-Z]+[a-zA-Z\-]*)/g;
+	contents = contents.replace(rOption, '$1`$2`');
+
+	// Github-flavored fenced code blocks are less error-prone than
+	// whitespace-sensitive ones and they can be highlighted in editors.
+	// Convert fenced blocks to <pre>.
+	var isCodeBlock = false;
+	contents = contents.split('\n')
+		.map(function(line) {
+			if (line.search(/^```/) !== -1) {
+				isCodeBlock = isCodeBlock ? false : true;
+				return undefined; //skip ``` lines
+			}
+
+			if (!isCodeBlock) {
+				return line;
+			}
+
+			return '    ' + line;
+		})
+		.filter(function(line) {
+			return line !== undefined;
+		})
+		.join('\n');
+
+	return contents;
+
+};
+
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+var contents = '';
+
+process.stdin.on('data', function(chunk) {
+	contents += chunk.toString();
+});
+
+process.stdin.on('end', function() {
+  process.stdout.write(transform(contents));
+});

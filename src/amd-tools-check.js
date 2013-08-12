@@ -37,6 +37,8 @@ var check = function() {
 		return dep.ast.loc.start.line + ':' + dep.ast.loc.start.column;
 	};
 
+	var hasBrokenDep = false;
+
 	filePool.forEach(function(file) {
 		var relative = path.relative(process.cwd(), file);
 		findBrokenDependencies(file, rjsconfig)
@@ -44,6 +46,7 @@ var check = function() {
 				return dep.declared.search(/http(s*):/) === -1;
 			})
 			.forEach(function(dep) {
+				hasBrokenDep = true;
 				switch(dep.type) {
 					case 'plugin':
 						log.writeln(relative + ':' + formatLocation(dep) + ': "' + dep.pluginName.yellow + '!' + dep.pluginArgs + '" plugin cannot be resolved');
@@ -61,6 +64,10 @@ var check = function() {
 			});
 	});
 
+	if (hasBrokenDep) {
+		log.warn('Circular dependency check may not complete properly due to broken dependencies!');
+	}
+
 	var cycles = filePool.map(function(file) {
 		return findCircularDependencies(file, rjsconfig);
 	});
@@ -68,7 +75,7 @@ var check = function() {
 	cycles = unique(cycles);
 	cycles.forEach(function(cycle) {
 		var formatted = cycle.map(function(file) {
-			return normalize(file, rjsconfig);
+			return normalize(rjsconfig, file);
 		}).join(' -> ');
 		log.writeln('Circular dependency: [' + formatted + ']');
 	});

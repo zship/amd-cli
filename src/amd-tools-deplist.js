@@ -40,12 +40,12 @@ var deplist = function() {
 		}
 		if (opts.resolve) {
 			deps = deps.map(function(dep) {
-				return resolve(dep, path.dirname(file), rjsconfig);
+				return resolve(rjsconfig, path.dirname(file), dep);
 			});
 		}
 		else if (opts.normalize) {
 			deps = deps.map(function(dep) {
-				return normalize(dep, rjsconfig);
+				return normalize(rjsconfig, path.dirname(file), dep);
 			});
 		}
 		deps.forEach(function(dep) {

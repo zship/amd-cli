@@ -28,14 +28,14 @@ var whatrequires = function() {
 	var remain = opts.argv.remain;
 	var rjsconfig = parseConfig();
 
-	var needle = resolve(remain[0], process.cwd(), rjsconfig);
+	var needle = resolve(rjsconfig, process.cwd(), remain[0]);
 	var haystack = resolveFileArgs(remain.slice(1), rjsconfig, opts.recursive);
 
 	var matches = haystack.filter(function(file) {
 		file = path.resolve(file);
 
 		var deps = getDependencies(file).map(function(dep) {
-			return resolve(dep, path.dirname(file), rjsconfig);
+			return resolve(rjsconfig, path.dirname(file), dep);
 		});
 
 		return deps.some(function(dep) {
