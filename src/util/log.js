@@ -2,8 +2,6 @@
 
 
 var util = require('util');
-
-// External lib. Requiring this here modifies the String prototype!
 var colors = require('colors');
 
 
@@ -18,7 +16,7 @@ log.init = function(opts) {
 };
 
 
-// Disable colors if --no-colors was passed.
+// Disable colors if --no-color was passed.
 log.initColors = function() {
 	if (log.opts['no-color']) {
 		// String color getters should just return the string.
@@ -80,10 +78,10 @@ function write(msg, stream) {
 	}
 }
 
-function writeln(msg) {
+function writeln(msg, stream) {
 	// Write blank line if no msg is passed in.
 	msg = msg || '';
-	write(msg + '\n');
+	write(msg + '\n', stream);
 }
 
 // Write output.
@@ -237,7 +235,7 @@ Object.keys(log).filter(function(key) {
 	// IS NOT set.
 	log.verbose[key] = function() {
 		suppressOutput = !log.opts.verbose;
-		arguments[0] = arguments[0].cyan;
+		arguments[0] = (arguments[0] || '').cyan;
 		log[key].apply(log, arguments);
 		suppressOutput = false;
 		return log.verbose;
