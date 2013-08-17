@@ -12,6 +12,7 @@ var unique = require('libamd/cycles/unique');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
+var findProjectFiles = require('./util/findProjectFiles');
 var log = require('./util/log');
 
 
@@ -28,13 +29,17 @@ var check = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
 	var rjsconfig = parseConfig();
-	var filePool = resolveFileArgs(opts.argv.remain, rjsconfig, opts.recursive);
+	var fileArgs = opts.argv.remain;
+	if (!fileArgs.length) {
+		fileArgs = findProjectFiles(rjsconfig);
+	}
+	var filePool = resolveFileArgs(fileArgs, rjsconfig, opts.recursive);
 
 	log.verbose.writeln('RequireJS configuration:');
 	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
 
-	var formatLocation = function(dep) {
-		return dep.ast.loc.start.line + ':' + dep.ast.loc.start.column;
+	var formatLocation = function(file, dep) {
+		return file.magenta + ':' + (dep.ast.loc.start.line + '').green + ':' + dep.ast.loc.start.column;
 	};
 
 	var hasBrokenDep = false;
@@ -49,16 +54,16 @@ var check = function() {
 				hasBrokenDep = true;
 				switch(dep.type) {
 					case 'plugin':
-						log.writeln(relative + ':' + formatLocation(dep) + ': "' + dep.pluginName.yellow + '!' + dep.pluginArgs + '" plugin cannot be resolved');
+						log.writeln(formatLocation(relative, dep) + ': "' + dep.pluginName.yellow + '!' + dep.pluginArgs + '" plugin cannot be resolved');
 						break;
 					case 'args':
-						log.writeln(relative + ':' + formatLocation(dep) + ': "' + dep.pluginName + '!' + dep.pluginArgs.yellow + '" cannot load()/load.fromText() with given arguments');
+						log.writeln(formatLocation(relative, dep) + ': "' + dep.pluginName + '!' + dep.pluginArgs.yellow + '" cannot load()/load.fromText() with given arguments');
 						break;
 					case 'shimmed':
-						log.writeln(relative + ': shim config dependency "' + dep.declared + '" cannot be resolved');
+						log.writeln(relative + ': shim config dependency "' + dep.declared.yellow + '" cannot be resolved');
 						break;
 					default:
-						log.writeln(relative + ':' + formatLocation(dep) + ': dependency "' + dep.declared + '" cannot be resolved');
+						log.writeln(formatLocation(relative, dep) + ': dependency "' + dep.declared.yellow + '" cannot be resolved');
 						break;
 				}
 			});
