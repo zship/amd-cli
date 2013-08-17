@@ -26,7 +26,7 @@ var _opts = {
 };
 
 
-var deplist = function() {
+var amddeps = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
 	var rjsconfig = parseConfig();
@@ -55,4 +55,4 @@ var deplist = function() {
 };
 
 
-module.exports = deplist;
+module.exports = amddeps;

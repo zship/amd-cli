@@ -1,5 +1,7 @@
-'use strict'
+'use strict';
 
+
+var path = require('path');
 
 var glob = require('glob');
 var compact = require('mout/array/compact');
@@ -15,8 +17,8 @@ var _expand = function(rjsconfig, files) {
 	return files.map(function(file) {
 		var globStart = file.indexOf('*');
 		if (globStart !== -1) {
-			var resolved = resolve(rjsconfig, file.slice(0, globStart));
-			return glob.sync(resolved + file.slice(globStart));
+			var resolved = path.resolve(rjsconfig.baseUrl, file.slice(0, globStart));
+			return glob.sync(resolved + '/' + file.slice(globStart));
 		}
 		return resolve(rjsconfig, file);
 	});

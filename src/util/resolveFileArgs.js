@@ -15,6 +15,7 @@ var resolve = require('libamd/modules/resolve');
 require('colors');
 
 var log = require('./log');
+var suggest = require('./suggest');
 
 
 //files may be either file paths or module ids.  turn module ids into file
@@ -44,9 +45,19 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 	files = unique(files);
 
 	files = files.map(function(file) {
+		if (fs.existsSync(file)) {
+			return path.resolve(file);
+		}
 		var resolved = resolve(rjsconfig, process.cwd(), file);
 		if (!resolved || !fs.existsSync(resolved)) {
 			log.warn('"' + file + '" could not be resolved.');
+			var suggestions = suggest(rjsconfig, file);
+			if (suggestions.length) {
+				log.warn('Did you mean:');
+				suggestions.forEach(function(name) {
+					log.warn('  ' + name);
+				});
+			}
 		}
 		return resolved;
 	});

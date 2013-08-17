@@ -99,7 +99,7 @@ log.writeln = function() {
 log.warn = function() {
 	var msg = format(arguments);
 	if (arguments.length > 0) {
-		writeln('>> '.yellow + msg.trim().replace(/\n/g, '\n>> '.yellow));
+		writeln('>> '.yellow + msg.replace(/\n/g, '\n>> '.yellow));
 	} else {
 		writeln('WARN'.yellow);
 	}

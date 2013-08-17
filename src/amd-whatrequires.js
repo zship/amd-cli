@@ -29,7 +29,7 @@ var whatrequires = function() {
 	var remain = opts.argv.remain;
 	var rjsconfig = parseConfig();
 
-	var needle = resolve(rjsconfig, process.cwd(), remain[0]);
+	var needle = resolveFileArgs(remain[0], rjsconfig)[0];
 	var haystackArg = remain.slice(1);
 	if (!haystackArg.length) {
 		haystackArg = findProjectFiles(rjsconfig);
