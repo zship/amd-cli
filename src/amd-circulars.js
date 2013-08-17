@@ -15,6 +15,7 @@ var unique = require('libamd/cycles/unique');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
+var findProjectFiles = require('./util/findProjectFiles');
 var log = require('./util/log');
 
 
@@ -78,7 +79,11 @@ var circulars = function() {
 	var opts = parseOpts(_opts, args, 0);
 
 	var rjsconfig = parseConfig();
-	var filePool = resolveFileArgs(opts.argv.remain, rjsconfig, opts.recursive);
+	var fileArgs = opts.argv.remain;
+	if (!fileArgs.length) {
+		fileArgs = findProjectFiles(rjsconfig);
+	}
+	var filePool = resolveFileArgs(fileArgs, rjsconfig, opts.recursive);
 
 	var cycles = filePool.map(function(file) {
 		return findCircularDependencies(rjsconfig, file);

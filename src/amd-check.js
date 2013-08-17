@@ -3,11 +3,8 @@
 
 var path = require('path');
 
-var flatten = require('mout/array/flatten');
 var findBrokenDependencies = require('libamd/findBrokenDependencies');
 var findCircularDependencies = require('libamd/findCircularDependencies');
-var normalize = require('libamd/modules/normalize');
-var unique = require('libamd/cycles/unique');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
@@ -73,16 +70,13 @@ var check = function() {
 		log.warn('Circular dependency check may not complete properly due to broken dependencies!');
 	}
 
-	var cycles = filePool.map(function(file) {
-		return findCircularDependencies(rjsconfig, file);
-	});
-	cycles = flatten(cycles, 1);
-	cycles = unique(cycles);
-	cycles.forEach(function(cycle) {
-		var formatted = cycle.map(function(file) {
-			return normalize(rjsconfig, file);
-		}).join(' -> ');
-		log.writeln('Circular dependency: [' + formatted + ']');
+	filePool.every(function(file) {
+		var cycles = findCircularDependencies(rjsconfig, file);
+		if (cycles.length) {
+			log.writeln('Circular dependencies detected. Run "amd circulars" for details.');
+			return false;
+		}
+		return true;
 	});
 };
 
