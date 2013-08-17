@@ -1,11 +1,11 @@
-amdtools(1) -- diagnostic tools for AMD projects
+amd(1) -- diagnostic tools for AMD projects
 ================================================
 
 
 SYNOPSIS
 --------
 
-`amdtools` <command> [-v|--verbose] [-c|--config <path>] [-b|--base-url <url>]
+`amd` <command> [-v|--verbose] [-c|--config <path>] [-b|--base-url <url>]
 
 
 OPTIONS
@@ -25,26 +25,26 @@ OPTIONS
   will override any `baseUrl` property gotten from `--config`.
 
 
-amdtools COMMANDS
+amd COMMANDS
 -----------------
 
-Invoke the following commands git-style e.g. `amdtools check`. Manpages can be
-accessed with e.g. `man amdtools-check`.
+Invoke the following commands git-style e.g. `amd check`. Manpages can be
+accessed with e.g. `man amd-check`.
 
-* amdtools-check(1):
+* amd-check(1):
   Run a linter-style check for broken dependencies
 
-* amdtools-deplist(1):
+* amd-deplist(1):
   Print an AMD module's dependencies as-declared
 
-* amdtools-normalize(1):
+* amd-normalize(1):
   Print the canonical AMD module name for a given relative AMD module name or
   file path
 
-* amdtools-resolve(1):
+* amd-resolve(1):
   Print the canonical file path for a given AMD module name
 
-* amdtools-whatrequires(1):
+* amd-whatrequires(1):
   Print all files which depend on a given AMD module
 
 
@@ -52,7 +52,7 @@ REQUIREJS CONFIGURATION
 -----------------------
 
 AMD-based projects normally specify a special configuration object which module
-loaders can use for path resolution. `amdtools` can take advantage of these
+loaders can use for path resolution. `amd` can take advantage of these
 RequireJS configuration (http://requirejs.org/docs/api.html#config) properties:
 
 * `baseUrl`:
@@ -113,7 +113,7 @@ require.config({
 
 ### Location
 
-`amdtools`' `--config` argument can accept RequireJS configuration objects
+`amd`'s `--config` argument can accept RequireJS configuration objects
 from:
 
 1. A .js file containing a configuration object declared in a
@@ -129,8 +129,8 @@ from:
 2. A .json file
 
 Configuration can also be given in a special JSON file called **.amdconfig**.
-`amdtools` searches for this file starting from the current working directory
+`amd` searches for this file starting from the current working directory
 all the way up to '/'. Inside of this file, `baseUrl` and `mainConfigFile`
 will be interpreted relative to the directory containing **.amdconfig**. It's
 recommended to place this file in your project's root directory to simplify
-`amdtools` commands.
+`amd` commands.

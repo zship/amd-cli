@@ -1,16 +1,16 @@
 {
-	"name": "amdtools",
+	"name": "amd-cli",
 	"description": "Diagnostic utilities for projects using the Asynchronous Module Definition format",
 	"version": "1.0.0-rc.1",
-	"homepage": "https://github.com/zship/amdtools",
+	"homepage": "https://github.com/zship/amd-cli",
 	"author": "Zach Shipley <zach@zachshipley.com>",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/zship/amd"
+		"url": "https://github.com/zship/amd-cli"
 	},
 	"license": "MIT",
 	"bin": {
-		"amd-tools": "bin/amdtools"
+		"amd": "bin/amd"
 	},
 	"directories": {
 		"man": "./man"
