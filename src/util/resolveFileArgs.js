@@ -37,7 +37,7 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 	dirs.forEach(function(dir) {
 		var absdir = path.resolve(dir);
 		log.verbose.writeln('Expanding directory "' + dir + '" to "' + absdir + '/**/*.js"');
-		Array.prototype.push.apply(files, glob.sync(absdir + '/**/*.js'));
+		files = files.concat(glob.sync(absdir + '/**/*.js'));
 	});
 
 	files = difference(files, dirs);
@@ -66,17 +66,17 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 
 	files = compact(files);
 
+	if (!files.length) {
+		log.error('Invalid files or module IDs were passed!');
+		process.exit(1);
+	}
+
 	if (log.opts.verbose) {
 		log.verbose.writeln('Expanded Files:');
 		files.forEach(function(file) {
 			log.verbose.writeln(path.relative(process.cwd(), file));
 		});
 		log.verbose.write('\n');
-	}
-
-	if (!files.length) {
-		log.error('Invalid files or module IDs were passed!');
-		process.exit(1);
 	}
 
 	return files.map(function(file) {
