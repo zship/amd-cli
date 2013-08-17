@@ -1,7 +1,7 @@
 'use strict';
 
 
-var _normalize = require('amd-tools/modules/normalize');
+var _normalize = require('libamd/modules/normalize');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');

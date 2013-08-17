@@ -1,7 +1,7 @@
 'use strict';
 
 
-var resolve = require('amd-tools/modules/resolve');
+var resolve = require('libamd/modules/resolve');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');

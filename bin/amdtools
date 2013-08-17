@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+var log = require('../src/util/log');
+
+try {
+	require('../src/amdtools.js').cli();
+}
+catch (e) {
+	log.error(e.stack);
+}

@@ -1,16 +1,16 @@
 {
-	"name": "amd-tools-cli",
-	"description": "Command-line interface for the amd-tools diagnostic library",
-	"version": "1.0.0-alpha4",
-	"homepage": "https://github.com/zship/amd-tools-cli",
+	"name": "amdtools",
+	"description": "Diagnostic utilities for projects using the Asynchronous Module Definition format",
+	"version": "1.0.0-rc.1",
+	"homepage": "https://github.com/zship/amdtools",
 	"author": "Zach Shipley <zach@zachshipley.com>",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/zship/amd-tools-cli"
+		"url": "https://github.com/zship/amd"
 	},
 	"license": "MIT",
 	"bin": {
-		"amd-tools": "bin/amd-tools"
+		"amd-tools": "bin/amdtools"
 	},
 	"directories": {
 		"man": "./man"
@@ -18,15 +18,11 @@
 	"preferGlobal": true,
 	"dependencies": {
 		"glob": "3.x",
-		"amd-tools": "1.x",
+		"libamd": "1.x",
 		"levenshtein": "1.x",
 		"mout": "0.x",
 		"colors": "0.6.x",
 		"nopt": "2.1.x"
-	},
-	"devDependencies": {
-		"node-amd-require": "0.x",
-		"ronn": "0.x"
 	},
 	"keywords": [
 		"amd",

@@ -5,11 +5,11 @@ var map = require('mout/object/map');
 var flatten = require('mout/array/flatten');
 var unique = require('mout/array/unique');
 
-var findCircularDependencies = require('amd-tools/findCircularDependencies');
-var normalize = require('amd-tools/modules/normalize');
-var rotated = require('amd-tools/cycles/rotated');
-var rotateUntil = require('amd-tools/cycles/rotateUntil');
-var contains = require('amd-tools/cycles/contains');
+var findCircularDependencies = require('libamd/findCircularDependencies');
+var normalize = require('libamd/modules/normalize');
+var rotated = require('libamd/cycles/rotated');
+var rotateUntil = require('libamd/cycles/rotateUntil');
+var contains = require('libamd/cycles/contains');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');

@@ -8,7 +8,7 @@ dist/man/man1/%.1: doc/%.1.md
 	# sed below is used to undo groff's behavior of single quotes -> acute accent
 	cat $< \
 	| ./_make/doc-preprocess - \
-	| ronn --roff --manual="AMD Tools CLI Manual" --organization="$(NAME) $(VERSION)" --date="$(shell date +'%Y-%m-%d')" --pipe \
+	| ronn --roff --manual="AMD Tools Manual" --organization="$(NAME) $(VERSION)" --date="$(shell date +'%Y-%m-%d')" --pipe \
 	| sed -r "s/\\\\'/\\\\(aq/g" \
 	> $@
 
@@ -24,4 +24,7 @@ dist: doc
 clean:
 	rm -Rf dist/
 
-.PHONY: doc dist clean
+publish: clean dist
+	cd dist; npm publish
+
+.PHONY: doc dist clean publish

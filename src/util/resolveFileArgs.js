@@ -9,9 +9,9 @@ var isArray = require('mout/lang/isArray');
 var compact = require('mout/array/compact');
 var unique = require('mout/array/unique');
 var difference = require('mout/array/difference');
-var getDependencyGraph = require('amd-tools/getDependencyGraph');
-var dfs = require('amd-tools/graphs/dfs');
-var resolve = require('amd-tools/modules/resolve');
+var getDependencyGraph = require('libamd/getDependencyGraph');
+var dfs = require('libamd/graphs/dfs');
+var resolve = require('libamd/modules/resolve');
 require('colors');
 
 var log = require('./log');
@@ -55,7 +55,7 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 		var flattened = [];
 
 		files.forEach(function(file) {
-			var graph = getDependencyGraph(file, rjsconfig);
+			var graph = getDependencyGraph(rjsconfig, file);
 			dfs(graph, function(node) {
 				flattened.push(node.file);
 			});

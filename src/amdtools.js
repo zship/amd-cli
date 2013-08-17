@@ -12,8 +12,8 @@ var parseOpts = require('./util/parseOpts');
 
 
 var scripts = {};
-glob.sync(__dirname + '/**/amd-tools-*.js').forEach(function(file) {
-	var name = file.replace(/.*\/amd\-tools\-(\S*)\.js/, '$1');
+glob.sync(__dirname + '/**/amdtools-*.js').forEach(function(file) {
+	var name = file.replace(/.*\/amdtools\-(\S*)\.js/, '$1');
 	scripts[name] = file;
 });
 
@@ -37,10 +37,10 @@ var cli = function() {
 		var term = opts.argv.remain[0];
 		var manpath = path.join(__dirname, '..', 'man');
 		if (term) {
-			manpath = path.join(manpath, 'amd-tools-' + term + '.1');
+			manpath = path.join(manpath, 'amdtools-' + term + '.1');
 		}
 		else {
-			manpath = path.join(manpath, 'amd-tools.1');
+			manpath = path.join(manpath, 'amdtools.1');
 		}
 		var conf = { customFds: [0, 1, 2] };
 		var man = child.spawn('man', [manpath], conf);
@@ -48,7 +48,7 @@ var cli = function() {
 	}
 
 	if (Object.keys(scripts).indexOf(task) === -1) {
-		log.error('amd-tools: \'' + task + '\' is not an amd-tools command.');
+		log.error('amdtools: \'' + task + '\' is not an amdtools command.');
 		var suggest = [];
 		Object.keys(scripts).forEach(function(cmd) {
 			var l = new Levenshtein(task, cmd).distance;

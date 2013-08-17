@@ -3,9 +3,9 @@
 
 var path = require('path');
 
-var normalize = require('amd-tools/modules/normalize');
-var resolve = require('amd-tools/modules/resolve');
-var getDependencies = require('amd-tools/getDependencies');
+var normalize = require('libamd/modules/normalize');
+var resolve = require('libamd/modules/resolve');
+var getDependencies = require('libamd/getDependencies');
 require('colors');
 
 var parseOpts = require('./util/parseOpts');
@@ -34,7 +34,7 @@ var deplist = function() {
 
 	files.forEach(function(file) {
 		log.verbose.write('\n' + path.relative(process.cwd(), file) + '\n');
-		var deps = getDependencies(file, rjsconfig);
+		var deps = getDependencies(rjsconfig, file);
 		if (!deps.length) {
 			log.verbose.write('(None)\n');
 		}

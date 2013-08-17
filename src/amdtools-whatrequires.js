@@ -3,8 +3,8 @@
 
 var path = require('path');
 
-var resolve = require('amd-tools/modules/resolve');
-var getDependencies = require('amd-tools/getDependencies');
+var resolve = require('libamd/modules/resolve');
+var getDependencies = require('libamd/getDependencies');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');

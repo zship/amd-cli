@@ -4,7 +4,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var getConfigRecursive = require('amd-tools/getConfigRecursive');
+var getConfigRecursive = require('libamd/getConfigRecursive');
 var mixin = require('mout/object/deepMixIn');
 
 var findup = require('./findup');

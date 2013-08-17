@@ -4,10 +4,10 @@
 var path = require('path');
 
 var flatten = require('mout/array/flatten');
-var findBrokenDependencies = require('amd-tools/findBrokenDependencies');
-var findCircularDependencies = require('amd-tools/findCircularDependencies');
-var normalize = require('amd-tools/modules/normalize');
-var unique = require('amd-tools/cycles/unique');
+var findBrokenDependencies = require('libamd/findBrokenDependencies');
+var findCircularDependencies = require('libamd/findCircularDependencies');
+var normalize = require('libamd/modules/normalize');
+var unique = require('libamd/cycles/unique');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
@@ -41,7 +41,7 @@ var check = function() {
 
 	filePool.forEach(function(file) {
 		var relative = path.relative(process.cwd(), file);
-		findBrokenDependencies(file, rjsconfig)
+		findBrokenDependencies(rjsconfig, file)
 			.filter(function(dep) {
 				return dep.declared.search(/http(s*):/) === -1;
 			})
@@ -69,7 +69,7 @@ var check = function() {
 	}
 
 	var cycles = filePool.map(function(file) {
-		return findCircularDependencies(file, rjsconfig);
+		return findCircularDependencies(rjsconfig, file);
 	});
 	cycles = flatten(cycles, 1);
 	cycles = unique(cycles);
