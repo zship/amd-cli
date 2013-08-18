@@ -1,32 +1,36 @@
 amd(1) -- diagnostic tools for AMD projects
-================================================
+===========================================
 
 
 SYNOPSIS
 --------
 
+`amd` [--version]
+
 `amd` <command> [-v|--verbose] [-c|--config <path>] [-b|--base-url <url>]
+      [<args>]
+
 
 
 OPTIONS
 -------
 
-* -v or --verbose:
+* -v | --verbose | --no-verbose:
   Show more information. Among other things, this will show the full AMD
   configuration object in effect.
 
-* -c or --config:
+* -c | --config:
   The file <path> to a RequireJS configuration object. See the "RequireJS
   Configuration" section for details.
 
-* -b or --base-url:
+* -b | --base-url:
   A RequireJS configuration `baseUrl` property to use. This is the most
   commonly needed property, so it can be set here for convenience. `--base-url`
   will override any `baseUrl` property gotten from `--config`.
 
 
 amd COMMANDS
------------------
+------------
 
 Invoke the following commands git-style e.g. `amd check`. Manpages can be
 accessed with e.g. `man amd-check`.
@@ -34,8 +38,18 @@ accessed with e.g. `man amd-check`.
 * amd-check(1):
   Run a linter-style check for broken dependencies
 
-* amd-deplist(1):
-  Print an AMD module's dependencies as-declared
+* amd-circulars(1):
+  Find and group circular dependencies
+
+* amd-deps(1):
+  Print an AMD module's dependencies
+
+* amd-graph(1):
+  Print a linearized dependency graph stemming from one or more <module>s
+
+* amd-help(1):
+  Open the manpage for an `amd` command. This is a fallback in case of
+  $MANPATH, manpath.config, or npm manpage install issues.
 
 * amd-normalize(1):
   Print the canonical AMD module name for a given relative AMD module name or
@@ -46,6 +60,35 @@ accessed with e.g. `man amd-check`.
 
 * amd-whatrequires(1):
   Print all files which depend on a given AMD module
+
+
+IDENTIFIER TERMINOLOGY
+----------------------
+
+* <module>:
+  An AMD module ID ("mout/array/unique", "./util/log") or file path to an AMD
+  module ("./src/filter.js").
+
+* <pool>:
+  One or more <module>s to indicate files inside your project (as opposed to
+  your project's dependencies). Shell globbing works as expected. Commands like
+  `amd-whatrequires` use <pool> to restrict their search to a manageable
+  subset. *May be omitted* if your RequireJS configuration uses
+  optimizer-specific options like `include` and `modules`.
+
+
+.AMDCONFIG FILE
+---------------
+
+Configuration can specified in a special JSON file called **.amdconfig** in
+lieu of using options like --base-url and --configuration. Inside this file,
+`baseUrl` will be interpreted relative to the directory containing
+**.amdconfig**. The `mainConfigFile` property can be used to load more
+configuration from elsewhere (properties inside **.amdconfig** will have a
+higher precedence).
+
+`amd` searches for this file starting from the current working directory all
+the way up to '/'.  Your project's root is a good place to put it.
 
 
 REQUIREJS CONFIGURATION
@@ -70,14 +113,23 @@ RequireJS configuration (http://requirejs.org/docs/api.html#config) properties:
   `location` (filesystem path), and `main` (the filename to use when a
   directory is requested).
 
+* `shim`:
+  Denotes dependencies of non-AMD scripts.
+
+These RequireJS optimizer
+(http://requirejs.org/docs/optimization.html#mainConfigFile) options are also
+recognized:
+
 * `mainConfigFile`:
   Load additional configuration from this file path. The additional
   configuration will have lower precedence than any properties specified in the
-  same context as `mainConfigFile`. This is a RequireJS optimizer option
-  (http://requirejs.org/docs/optimization.html#mainConfigFile).
+  same context as `mainConfigFile`.
 
-* `shim`:
-  Denotes dependencies of non-AMD scripts.
+* `modules`, `include`, `exclude`, `excludeShallow`:
+  Module IDs which will be used together to create a flattened dependency graph
+  for the <pool> argument of `amd` commands. They behave the same as the
+  RequireJS optimizer with one difference: paths may be globbed in bash
+  globstar format.
 
 A configuration object declared inside of a JavaScript file looks like this:
 
@@ -107,7 +159,9 @@ require.config({
       exports: "jQuery.fn.colorize"
     }
     "jquery.scroll": ["jquery"]
-  }
+  },
+  // 'my project files consist of every module starting with "deferreds/"'
+  include: ["deferreds/**"]
 });
 ```
 
@@ -128,9 +182,4 @@ from:
 
 2. A .json file
 
-Configuration can also be given in a special JSON file called **.amdconfig**.
-`amd` searches for this file starting from the current working directory
-all the way up to '/'. Inside of this file, `baseUrl` and `mainConfigFile`
-will be interpreted relative to the directory containing **.amdconfig**. It's
-recommended to place this file in your project's root directory to simplify
-`amd` commands.
+3. **.amdconfig** file (See '.amdconfig File' section above)
