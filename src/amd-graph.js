@@ -4,8 +4,6 @@
 var path = require('path');
 
 var normalize = require('libamd/modules/normalize');
-var resolve = require('libamd/modules/resolve');
-var getDependencies = require('libamd/getDependencies');
 var getDependencyGraph = require('libamd/getDependencyGraph');
 var linearize = require('libamd/graphs/linearize');
 require('colors');

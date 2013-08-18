@@ -11,6 +11,7 @@ var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var findProjectFiles = require('./util/findProjectFiles');
 var log = require('./util/log');
+var offsetToLoc = require('./util/offsetToLoc');
 
 
 var _opts = {
@@ -26,6 +27,7 @@ var check = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
 	var rjsconfig = parseConfig();
+
 	var fileArgs = opts.argv.remain;
 	if (!fileArgs.length) {
 		fileArgs = findProjectFiles(rjsconfig);
@@ -36,13 +38,14 @@ var check = function() {
 	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
 
 	var formatLocation = function(file, dep) {
-		return file.magenta + ':' + (dep.ast.loc.start.line + '').green + ':' + dep.ast.loc.start.column;
+		var loc = offsetToLoc(file, dep.ast.start);
+		return file.magenta + ':' + (loc.line + '').green + ':' + loc.col;
 	};
 
 	var hasBrokenDep = false;
 
 	filePool.forEach(function(file) {
-		var relative = path.relative(process.cwd(), file);
+		var relative = path.relative('.', file);
 		findBrokenDependencies(rjsconfig, file)
 			.filter(function(dep) {
 				return dep.declared.search(/http(s*):/) === -1;

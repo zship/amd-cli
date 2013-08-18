@@ -3,17 +3,33 @@
 
 var path = require('path');
 
+var normalize = require('libamd/modules/normalize');
 var resolve = require('libamd/modules/resolve');
 var getDependencies = require('libamd/getDependencies');
+var mixin = require('mout/object/mixIn');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var findProjectFiles = require('./util/findProjectFiles');
 var log = require('./util/log');
+var offsetToLoc = require('./util/offsetToLoc');
 
 
 var _opts = {
+	'location': {
+		type: Boolean,
+		shortHand: 'l',
+		description: 'Show line:column numbers where each dependency was declared'
+	},
+	'normalize': {
+		type: Boolean,
+		description: 'Convert verbatim dependencies into unique module IDs'
+	},
+	'resolve': {
+		type: Boolean,
+		description: 'Convert verbatim dependencies into resolved file paths'
+	},
 	'recursive': {
 		type: Boolean,
 		shortHand: 'R',
@@ -36,21 +52,43 @@ var whatrequires = function() {
 	}
 	var haystack = resolveFileArgs(haystackArg, rjsconfig, opts.recursive);
 
-	var matches = haystack.filter(function(file) {
-		file = path.resolve(file);
+	var matches = [];
 
-		var deps = getDependencies(rjsconfig, file).map(function(dep) {
-			return resolve(rjsconfig, path.dirname(file), dep);
-		});
-
-		return deps.some(function(dep) {
-			//take case-insensitive filesystems like HFS+ into account
-			return dep && dep.toLowerCase() === needle.toLowerCase();
-		});
+	haystack.forEach(function(file) {
+		matches = matches.concat(
+			getDependencies(rjsconfig, file)
+				.map(function(dep) {
+					return mixin({}, dep, {
+						resolved: resolve(rjsconfig, path.dirname(file), dep.name),
+						parent: file,
+						parentAbs: file
+					});
+				})
+				.filter(function(dep) {
+					//take case-insensitive filesystems like HFS+ into account
+					return dep.resolved && dep.resolved.toLowerCase() === needle.toLowerCase();
+				})
+		);
 	});
 
-	matches.forEach(function(file) {
-		log.writeln(path.relative(process.cwd(), file));
+	if (opts.normalize) {
+		matches.forEach(function(dep) {
+			dep.parent = normalize(rjsconfig, dep.parent);
+		});
+	}
+	else if (!opts.resolve) {
+		matches.forEach(function(dep) {
+			dep.parent = path.relative('.', dep.parent);
+		});
+	}
+
+	matches.forEach(function(dep) {
+		if (opts.location) {
+			var loc = offsetToLoc(dep.parentAbs, dep.start);
+			log.writeln(dep.parent.magenta + ':' + (loc.line+'').green + ':' + loc.col + ': as "' + dep.name + '"');
+			return;
+		}
+		log.writeln(dep.parent);
 	});
 };
 

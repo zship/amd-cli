@@ -12,9 +12,15 @@ var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var log = require('./util/log');
+var offsetToLoc = require('./util/offsetToLoc');
 
 
 var _opts = {
+	'location': {
+		type: Boolean,
+		shortHand: 'l',
+		description: 'Show line:column numbers where each dependency was declared'
+	},
 	'normalize': {
 		type: Boolean,
 		description: 'Convert verbatim dependencies into unique module IDs'
@@ -33,23 +39,31 @@ var amddeps = function() {
 	var files = resolveFileArgs(opts.argv.remain, rjsconfig);
 
 	files.forEach(function(file) {
-		log.verbose.write('\n' + path.relative(process.cwd(), file) + '\n');
+		var relative = path.relative('.', file);
+		log.verbose.write(relative + '\n');
 		var deps = getDependencies(rjsconfig, file);
 		if (!deps.length) {
 			log.verbose.write('(None)\n');
 		}
 		if (opts.resolve) {
 			deps = deps.map(function(dep) {
-				return resolve(rjsconfig, path.dirname(file), dep);
+				dep.name = resolve(rjsconfig, path.dirname(file), dep.name);
+				return dep;
 			});
 		}
 		else if (opts.normalize) {
 			deps = deps.map(function(dep) {
-				return normalize(rjsconfig, path.dirname(file), dep);
+				dep.name = normalize(rjsconfig, path.dirname(file), dep.name);
+				return dep;
 			});
 		}
 		deps.forEach(function(dep) {
-			log.writeln(dep);
+			if (opts.location) {
+				var loc = offsetToLoc(file, dep.start);
+				log.writeln(relative.magenta + ':' + (loc.line+'').green + ':' + loc.col + ': ' + dep.name);
+				return;
+			}
+			log.writeln(dep.name);
 		});
 	});
 };
