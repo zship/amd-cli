@@ -6,18 +6,28 @@ SYNOPSIS
 --------
 
 `amd` [--version]
-
-`amd` <command> [-v|--verbose] [-c|--config <path>] [-b|--base-url <url>]
+`amd` <command> [-v|--(no-)verbose] [-c|--config <path>] [-b|--base-url <url>]
       [<args>]
 
+
+DESCRIPTION
+-----------
+
+amd-cli is a suite of command-line utilities for JavaScript projects which
+employ the Asynchronous Module Definition format. They can be used to diagnose
+problems (`amd check`, `amd circulars`) or to gain a deeper understanding of a
+project's structure (`amd deps`, `amd graph`).
 
 
 OPTIONS
 -------
 
+These options are applicable to almost all commands:
+
 * -v | --verbose | --no-verbose:
   Show more information. Among other things, this will show the full AMD
-  configuration object in effect.
+  configuration object in effect. --no-verbose disables a previously-set
+  --verbose flag.
 
 * -c | --config:
   The file <path> to a RequireJS configuration object. See the "RequireJS

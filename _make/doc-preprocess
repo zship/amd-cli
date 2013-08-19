@@ -4,12 +4,47 @@
 'use strict';
 
 
+var repeat = require('mout/string/repeat');
+
+
 var transform = function(contents) {
 
 	// Surround arguments in backticks. They can be unambiguously recognized so
 	// I don't want to do this manually.
-	var rOption = /([\s|\[\]])(\-\-?[a-zA-Z]+[a-zA-Z\-]*)/g;
+	var rOption = /([\s|\[\]])(\-\-?[a-zA-Z\(]+[a-zA-Z\-\)]*)/g;
 	contents = contents.replace(rOption, '$1`$2`');
+
+	//respect manual alignment in the SYNOPSIS
+	var isSynopsis = false;
+	contents = contents.split('\n')
+		.map(function(line, i) {
+			if (line.search(/^SYNOPSIS/) !== -1) {
+				isSynopsis = true;
+				return line;
+			}
+
+			if (!isSynopsis) {
+				return line;
+			}
+
+			if (line.search('---') === 0) {
+				return line;
+			}
+
+			if (line.search(/^\s+/) !== -1) {
+				var indent = line.search(/\S/);
+				var spaces = repeat('&nbsp;', indent - 2); // 2 backticks
+				return line.replace(/^\s+(\S*)/, spaces + '$1') + '<br>';
+			}
+
+			if (line.search(/^[A-Z]+/) !== -1) {
+				isSynopsis = false;
+				return line; //new section
+			}
+
+			return line + '<br>';
+		})
+		.join('\n');
 
 	// Github-flavored fenced code blocks are less error-prone than
 	// whitespace-sensitive ones and they can be highlighted in editors.
