@@ -11,7 +11,7 @@ var transform = function(contents) {
 
 	// Surround arguments in backticks. They can be unambiguously recognized so
 	// I don't want to do this manually.
-	var rOption = /([\s|\[\]])(\-\-?[a-zA-Z\(]+[a-zA-Z\-\)]*)/g;
+	var rOption = /([^a-zA-Z\-])(\-\-?[a-zA-Z\(]+[a-zA-Z\-\)]*)/g;
 	contents = contents.replace(rOption, '$1`$2`');
 
 	//respect manual alignment in the SYNOPSIS

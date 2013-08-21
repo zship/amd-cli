@@ -6,8 +6,8 @@ SYNOPSIS
 --------
 
 `amd` [--version]
-`amd` <command> [-v|--(no-)verbose] [-c|--config <path>] [-b|--base-url <url>]
-      [<args>]
+`amd` <command> [-v|--(no-)verbose] [-c|--config=<path>] [-b|--base-url=<url>]
+      [<command-args>]
 
 
 DESCRIPTION
@@ -24,23 +24,23 @@ OPTIONS
 
 These options are applicable to almost all commands:
 
-* -v | --verbose | --no-verbose:
+* -v, --verbose, --no-verbose:
   Show more information. Among other things, this will show the full AMD
   configuration object in effect. --no-verbose disables a previously-set
   --verbose flag.
 
-* -c | --config:
+* -c <path>, --config=<path>:
   The file <path> to a RequireJS configuration object. See the "RequireJS
   Configuration" section for details.
 
-* -b | --base-url:
+* -b <path>, --base-url=<path>:
   A RequireJS configuration `baseUrl` property to use. This is the most
-  commonly needed property, so it can be set here for convenience. `--base-url`
-  will override any `baseUrl` property gotten from `--config`.
+  commonly needed property, so it can be set here for convenience. --base-url
+  will override any `baseUrl` property gotten from --config.
 
 
-amd COMMANDS
-------------
+COMMANDS
+--------
 
 Invoke the following commands git-style e.g. `amd check`. Manpages can be
 accessed with e.g. `man amd-check`.

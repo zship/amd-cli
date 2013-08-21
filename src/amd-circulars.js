@@ -20,11 +20,6 @@ var log = require('./util/log');
 
 
 var _opts = {
-	'recursive': {
-		type: Boolean,
-		shortHand: 'R',
-		description: 'Recurse into the full dependency graph of each passed <module>, adding each dependency into the <module> list'
-	},
 	'group': {
 		type: Number,
 		shortHand: 'g'
@@ -83,7 +78,7 @@ var circulars = function() {
 	if (!fileArgs.length) {
 		fileArgs = findProjectFiles(rjsconfig);
 	}
-	var filePool = resolveFileArgs(fileArgs, rjsconfig, opts.recursive);
+	var filePool = resolveFileArgs(fileArgs, rjsconfig);
 
 	var cycles = filePool.map(function(file) {
 		return findCircularDependencies(rjsconfig, file);
