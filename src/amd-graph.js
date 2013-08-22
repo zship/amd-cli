@@ -15,13 +15,19 @@ var log = require('./util/log');
 
 
 var _opts = {
-	'normalize': {
+	'linearize': {
 		type: Boolean,
-		description: 'Convert verbatim dependencies into unique module IDs'
+		shortHand: 'l'
+	},
+	'reverse': {
+		type: Boolean,
+		shortHand: 'r'
+	},
+	'normalize': {
+		type: Boolean
 	},
 	'resolve': {
-		type: Boolean,
-		description: 'Convert verbatim dependencies into resolved file paths'
+		type: Boolean
 	}
 };
 
@@ -37,26 +43,33 @@ var amdGraph = function() {
 		nodes.push(getDependencyGraph(rjsconfig, file));
 	});
 
+	var displayName = function(node) {
+		if (opts.normalize) {
+			return normalize(rjsconfig, node.file);
+		}
+		else if (opts.resolve) {
+			return node.file;
+		}
+		else {
+			return path.relative('.', node.file);
+		}
+	};
+
 	var sorted = linearize(nodes);
 
-	if (opts.normalize) {
-		sorted = sorted.map(function(node) {
-			return normalize(rjsconfig, node.file);
-		});
-	}
-	else if (opts.resolve) {
-		sorted = sorted.map(function(node) {
-			return node.file;
-		});
-	}
-	else {
-		sorted = sorted.map(function(node) {
-			return path.relative('.', node.file);
-		});
+	if (opts.reverse) {
+		sorted = sorted.reverse();
 	}
 
-	sorted.forEach(function(file) {
-		log.writeln(file);
+	sorted.forEach(function(node) {
+		if (opts.linearize) {
+			log.writeln(displayName(node));
+		}
+		else {
+			node.deps.forEach(function(dep) {
+				log.writeln(displayName(node) + ' ' + displayName(dep));
+			});
+		}
 	});
 };
 
