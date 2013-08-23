@@ -30,7 +30,7 @@ var offsetToLoc = function(file, offset) {
 		if (offset < breaks[i]) {
 			return {
 				line: i + 1,
-				col: offset - breaks[i-1]
+				col: offset - (i > 0 ? breaks[i-1] : 0)
 			};
 		}
 	}
