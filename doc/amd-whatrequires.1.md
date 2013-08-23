@@ -1,35 +1,32 @@
-amd-deps(1) -- show a module's dependencies
-===========================================
+amd-whatrequires(1) -- find all modules which require a specific module
+=======================================================================
 
 
 SYNOPSIS
 --------
 
-`amd deps` <module>... [-l|--(no-)location] [--(no-)normalize] [--(no-)resolve]
-           [--(no-)color] [-v|--(no-)verbose] [-c|--config=<path>]
-           [-b|--base-url=<url>]
+`amd whatrequires` <module> [<pool>...] [-l|--(no-)location]
+                   [-R|--(no-)recursive] [--(no-)normalize] [--(no-)resolve]
+                   [-v|--(no-)verbose] [-c|--config=<path>]
+                   [-b|--base-url=<url>]
 
 
 DESCRIPTION
 -----------
 
-Displays one or more <module>'s dependencies exactly as they are declared. The
---normalize and --resolve options can be used to display canonicalized versions
-of these dependencies (either AMD module ID or filesystem-absolute) instead.
-Can recognize both AMD-style `define(['dep1', 'dep2'], function(dep1, dep2)
-{...` and CommonJS-style `var dep1 = require('dep1')`.
+`amd whatrequires` searches the dependencies of all modules in <pool> for
+references to <module>, outputting a list of modules which require <module>.
+<pool> can be derived from your RequireJS configuration if it uses the
+`modules` or `include` properties (See "RequireJS Configuration" in amd(1)).
 
 
 OPTIONS
 -------
 
-* --color, --no-color:
-  Colorize output similar to `grep`. --no-color disables a previously-set
-  --color flag and ensures a machine-parseable output.
-
 * -l, --location, --no-location:
-  Show the file, line, and column number of each declared dependency.
-  --no-location disables a previously-set --location flag.
+  Show the line, column number, and name of the <module> exactly as it was
+  declared in each `require()`-ing module. --no-location disables a
+  previously-set --location flag.
 
 * --normalize, --no-normalize:
   Convert each dependency name to a "module ID", which is a canonicalized file
@@ -37,6 +34,10 @@ OPTIONS
   configuration's `paths` property. This is the usual way to express module
   names (e.g. "mout/lang/clone" as opposed to "../lang/clone"). See
   amd-normalize(1) for a more general solution.
+
+* -R, --recursive, --no-recursive:
+  Trace the full dependency graph of each <module> given in <pool>, including
+  every unique module as part of the pool.
 
 * --resolve, --no-resolve:
   Convert each dependency name to an absolute file path. See amd-resolve(1) for
@@ -63,6 +64,25 @@ which are more likely to be what you're looking for.
   Show more information. Among other things, this will show the full AMD
   configuration object in effect. --no-verbose disables a previously-set
   --verbose flag.
+
+
+EXAMPLES
+--------
+
+Assuming a --base-url of ".", and a `paths` property containing `{"mout":
+"lib/mout"}` (mout 0.7):
+
+$ amd whatrequires mout/lang/isKind
+
+lib/mout/lang/isArray.js<br>
+lib/mout/lang/isObject.js<br>
+lib/mout/lang/isFunction.js<br>
+
+$ amd whatrequires mout/lang/isKind --location
+
+lib/mout/lang/isArray.js:1:8: as "./isKind"<br>
+lib/mout/lang/isObject.js:1:8: as "./isKind"<br>
+lib/mout/lang/isFunction.js:1:8: as "./isKind"<br>
 
 
 AMD

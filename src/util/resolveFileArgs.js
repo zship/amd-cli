@@ -31,7 +31,7 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 			return fs.statSync(file).isDirectory();
 		}
 		catch (e) {
-			return false; // non-existant file (likely a module ID)
+			return false; // nonexistent file (likely a module ID)
 		}
 	});
 
