@@ -34,9 +34,6 @@ var check = function() {
 	}
 	var filePool = resolveFileArgs(fileArgs, rjsconfig, opts.recursive);
 
-	log.verbose.writeln('RequireJS configuration:');
-	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
-
 	var formatLocation = function(file, dep) {
 		var loc = offsetToLoc(file, dep.ast.start);
 		return file.magenta + ':' + (loc.line + '').green + ':' + loc.col;

@@ -9,6 +9,7 @@ var mixin = require('mout/object/deepMixIn');
 
 var findup = require('./findup');
 var parseOpts = require('./parseOpts');
+var log = require('./log');
 
 
 var _opts = {
@@ -59,6 +60,9 @@ var parseConfig = function() {
 	if (!fs.existsSync(rjsconfig.baseUrl)) {
 		throw new Error('RequireJS baseUrl "' + rjsconfig.baseUrl + '" does not resolve to a real path!');
 	}
+
+	log.verbose.writeln('RequireJS configuration:');
+	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
 
 	return rjsconfig;
 };

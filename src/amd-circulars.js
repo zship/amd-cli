@@ -72,8 +72,8 @@ var _groupsOf = function(cycles, num) {
 var circulars = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-
 	var rjsconfig = parseConfig();
+
 	var fileArgs = opts.argv.remain;
 	if (!fileArgs.length) {
 		fileArgs = findProjectFiles(rjsconfig);
