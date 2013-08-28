@@ -64,15 +64,27 @@ this:
 * Upgrade npm
   1. `[sudo] npm install -g npm`
   2. Re-install amd-cli: `[sudo] npm install -g amd-cli`
-* Manually add amd-cli's manpages to your MANPATH
+* Check that npm's prefix "share" directory is in your MANPATH
+  1. Get the prefix under which npm installs global packages: `npm prefix -g`
+  2. Mentally add "/share/man" to the end of this path i.e. `echo $(npm prefix
+     -g)/share/man`
+  3. `echo $MANPATH` - this should contain the path in #2 (npm prefix +
+     "/share/man"). If not, move on to #4.
+  4. Add it: `MANPATH=$MANPATH:"$(npm prefix -g)/share/man"`
+  5. Try it out: `man amd`
+  6. Make it permanent by copy/pasting the command in #4 to your `~/.bashrc`,
+     or just run:
+     `echo 'MANPATH=$MANPATH:"$(npm prefix -g)/share/man"' >> ~/.bashrc`
+* Manually add just amd-cli's manpages to your MANPATH
   1. The manpages are in a directory called "man" adjacent to the installed
      `amd` script. Check that the directory is there:
      `cd "$(dirname $(readlink -f $(which amd) ) )/../man"`
   2. Then add it:
-     `MANPATH="$(dirname "$(readlink -f "$(which amd)" )" )/../man":$MANPATH`
+     `MANPATH=$MANPATH:"$(dirname "$(readlink -f "$(which amd)" )" )/../man"`
   3. Try it out: `man amd`
-  4. Make it permanent by copy/pasting the command in #2 to your `~/.bashrc`
-     (create it if it doesn't exist)
+  4. Make it permanent by copy/pasting the command in #4 to your `~/.bashrc`,
+     or just run:
+     `echo 'MANPATH=$MANPATH:"$(dirname "$(readlink -f "$(which amd)" )" )/../man"' >> ~/.bashrc`
 * Use the fallback `amd help` command
   * `amd help`, `amd help deps`, etc.
 
