@@ -8,10 +8,11 @@ DOC_DEST = $(DOC_SRC:doc/%.1.md=dist/man/man1/%.1)
 # perl: write a more precise iso8601 date (2013-08-17 instead of "August 2013")
 dist/man/man1/%.1: doc/%.1.md
 	@mkdir -p $(@D)
-	@cat $< \
+	@set -e; \
+	cat $< \
 	| ./_make/doc-preprocess - \
 	| ronn --roff --manual="AMD Manual" --organization="$(NAME) $(VERSION)" --pipe \
-	| sed -r "s/\\\\'/\\\\(aq/g" \
+	| sed -E "s/\\\\'/\\\\(aq/g" \
 	| perl -pe 's/^(.TH ".*?" ".*?" ").*?(".*)/$${1}$(DATE)$$2/' \
 	> $@
 	@echo "$< -> $@"
