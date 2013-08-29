@@ -7,7 +7,7 @@ var child = require('child_process');
 
 var help = function() {
 	var term = process.argv[3];
-	var manpath = path.join(__dirname, '..', 'man');
+	var manpath = path.join(__dirname, '..', 'man/man1');
 	if (term) {
 		manpath = path.join(manpath, 'amd-' + term + '.1');
 	}
