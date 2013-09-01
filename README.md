@@ -13,7 +13,24 @@ Folks wanting programmatic access can use
 Installation
 ------------
 
-`[sudo] npm install -g amd-cli`
+```
+$ [sudo] npm install -g amd-cli
+```
+
+Or install from source:
+
+```
+$ git clone https://github.com/zship/amd-cli.git
+$ cd amd-cli
+$ make
+$ [sudo] make install
+```
+
+`make` follows the same steps used for packaging amd-cli for npm, which is to
+build documentation (markdown -> roff) and move it along with all other
+distributables to a new "dist/" directory. `make install` switches to "dist/"
+and runs `npm install -g` (which copies amd-cli to the `npm prefix` directory
+so that it's (probably) in your PATH).
 
 
 Usage
