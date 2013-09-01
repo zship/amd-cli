@@ -15,6 +15,9 @@ var log = require('./util/log');
 
 
 var _opts = {
+	'dot': {
+		type: Boolean
+	},
 	'linearize': {
 		type: Boolean,
 		shortHand: 'l'
@@ -56,9 +59,25 @@ var amdGraph = function() {
 	};
 
 	var sorted = linearize(nodes);
+	sorted = sorted.filter(function uniq(node, i, list) {
+		return node.file && list.slice(0, i).every(function(node2) {
+			return node.file !== node2.file;
+		});
+	});
 
 	if (opts.reverse) {
 		sorted = sorted.reverse();
+	}
+
+	if (opts.dot) {
+		log.writeln('digraph amd {');
+		sorted.forEach(function(node) {
+			node.deps.forEach(function(dep) {
+				log.writeln('"' + displayName(node) + '" -> "' + displayName(dep) + '"');
+			});
+		});
+		log.writeln('}');
+		return;
 	}
 
 	sorted.forEach(function(node) {

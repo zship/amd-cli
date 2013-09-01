@@ -5,7 +5,7 @@ amd-graph(1) -- trace the dependency graph rooted at a module
 SYNOPSIS
 --------
 
-`amd graph` <module>... [-l|--(no-)linearize] [-r|--(no-)reverse]
+`amd graph` <module>... [--dot] [-l|--(no-)linearize] [-r|--(no-)reverse]
             [--(no-)normalize] [--(no-)resolve] [-v|--(no-)verbose]
             [-c|--config=<path>] [-b|--base-url=<url>]
 
@@ -55,6 +55,12 @@ Use --normalize or --resolve to format them differently.
 OPTIONS
 -------
 
+* --dot:
+  Display output in DOT format. This can be used with Graphviz to generate
+  visualizations of your dependency graph. You might want to combine with
+  --normalize to keep visualized node labels short but unambiguous. See
+  "Examples" below.
+
 * -l, --linearize, --no-linearize:
   Display the vertices of the graph, i.e. each unique module only once.
   Ordering is top-down (with the given root <module> displayed first, followed
@@ -98,6 +104,26 @@ which are more likely to be what you're looking for.
   Show more information. Among other things, this will show the full AMD
   configuration object in effect. --no-verbose disables a previously-set
   --verbose flag.
+
+
+EXAMPLES
+--------
+
+`$ amd graph --normalize app/main`
+
+  Generate the dependency graph rooted at the "app/main" module. Display every
+  module in the graph along with its dependencies, normalized to AMD module
+  IDs.
+
+`$ dot -Tpng <(amd graph --normalize --dot app/main) > graph.png`
+
+  Use [Graphviz](http://www.graphviz.org/) to generate a PNG image visualizing
+  the dependency graph. This example uses bash process substitution to pass
+  --dot formatted output to the dot(1) command.
+
+`$ amd graph --normalize --dot app/main > graph.dot; /path/to/gephi/bin/gephi -o graph.dot`
+
+  View the dependency graph interactively with [Gephi](https://gephi.org/).
 
 
 AMD
