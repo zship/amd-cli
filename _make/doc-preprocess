@@ -9,10 +9,96 @@ var repeat = require('mout/string/repeat');
 
 var transform = function(contents) {
 
-	// Surround arguments in backticks. They can be unambiguously recognized so
-	// I don't want to do this manually.
+	// Surround --arguments in backticks, but only outside of code elements.
+	// Here's a really rudimentary parser to separate code blocks/inline code
+	// from regular text.
+	var blocks = [];
+	var capture;
+	var src = contents.slice();
+
+	// block-level
+	while (src) {
+		if ((capture = src.match(/\n *```[^]*\n *```/))) {
+			blocks.push({
+				type: 'notcode',
+				text: src.slice(0, capture.index)
+			});
+			blocks.push({
+				type: 'fence',
+				text: src.slice(capture.index, capture.index + capture[0].length)
+			});
+			src = src.slice(capture.index + capture[0].length);
+		}
+		else {
+			blocks.push({
+				type: 'notcode',
+				text: src
+			});
+			src = null;
+		}
+	}
+
+	// inline-level
+	var tokens = [];
+	blocks.forEach(function(block) {
+		if (block.type === 'fence') {
+			tokens.push(block);
+			return;
+		}
+
+		src = block.text;
+
+		while (src) {
+			if ((capture = src.match(/`[^]+?`/))) {
+				tokens.push({
+					type: 'notcode',
+					text: src.slice(0, capture.index)
+				});
+				tokens.push({
+					type: 'code',
+					text: src.slice(capture.index, capture.index + capture[0].length)
+				});
+				src = src.slice(capture.index + capture[0].length);
+			}
+			else {
+				tokens.push({
+					type: 'notcode',
+					text: src
+				});
+				src = null;
+			}
+		}
+	});
+
 	var rOption = /([^a-zA-Z\-])(\-\-?[a-zA-Z\(]+[a-zA-Z\-\)]*)/g;
-	contents = contents.replace(rOption, '$1`$2`');
+	tokens = tokens.map(function(token) {
+		if (token.type === 'code') {
+			return token.text;
+		}
+
+		if (token.type === 'fence') {
+			// while we're in here, transform gfm fenced code blocks to regular
+			// markdown code blocks (ronn doesn't support gfm)
+			return token.text.split('\n')
+				.map(function(line) {
+					if (line.search(/^```/) !== -1) {
+						return null; //skip ``` lines
+					}
+
+					return '    ' + line;
+				})
+				.filter(function(line) {
+					return line !== null;
+				})
+				.join('\n');
+		}
+
+		// perform the --arguments transform (if they're not inside a code
+		// element)
+		return token.text.replace(rOption, '$1`$2`');
+	});
+
+	contents = tokens.join('');
 
 	//respect manual alignment in the SYNOPSIS
 	var isSynopsis = false;
@@ -43,28 +129,6 @@ var transform = function(contents) {
 			}
 
 			return line + '<br>';
-		})
-		.join('\n');
-
-	// Github-flavored fenced code blocks are less error-prone than
-	// whitespace-sensitive ones and they can be highlighted in editors.
-	// Convert fenced blocks to <pre>.
-	var isCodeBlock = false;
-	contents = contents.split('\n')
-		.map(function(line) {
-			if (line.search(/^```/) !== -1) {
-				isCodeBlock = isCodeBlock ? false : true;
-				return undefined; //skip ``` lines
-			}
-
-			if (!isCodeBlock) {
-				return line;
-			}
-
-			return '    ' + line;
-		})
-		.filter(function(line) {
-			return line !== undefined;
 		})
 		.join('\n');
 
