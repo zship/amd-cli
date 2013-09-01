@@ -55,6 +55,14 @@ which are more likely to be what you're looking for.
   --verbose flag.
 
 
+EXIT STATUS
+-----------
+
+0 = ok, no broken or circular dependencies
+1 = error occurred during the check
+2 = one or more broken or circular dependencies
+
+
 AMD
 ---
 
