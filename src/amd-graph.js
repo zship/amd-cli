@@ -60,7 +60,7 @@ var amdGraph = function() {
 
 	var sorted = linearize(nodes);
 	sorted = sorted.filter(function uniq(node, i, list) {
-		return node.file && list.slice(0, i).every(function(node2) {
+		return node.file && list.slice(i+1).every(function(node2) {
 			return node.file !== node2.file;
 		});
 	});
