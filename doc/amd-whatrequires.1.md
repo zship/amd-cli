@@ -36,8 +36,8 @@ OPTIONS
   amd-normalize(1) for a more general solution.
 
 * -R, --recursive, --no-recursive:
-  Trace the full dependency graph of each <module> given in <pool>, including
-  every unique module as part of the pool.
+  Trace the full dependency graph of each <module> given in <pool>,
+  concatenating every dependency back into the pool.
 
 * --resolve, --no-resolve:
   Convert each dependency name to an absolute file path. See amd-resolve(1) for
