@@ -33,6 +33,8 @@ var parseConfig = function() {
 	var opts = parseOpts(_opts, args, 0);
 
 	var rjsconfig = {};
+	rjsconfig.baseUrl = process.cwd();
+
 	if (opts.config) {
 		if (!fs.existsSync(opts.config)) {
 			throw new Error('--config file "' + path.relative(process.cwd(), opts.config) + '" was not found!');
