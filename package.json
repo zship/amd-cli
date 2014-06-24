@@ -1,7 +1,7 @@
 {
   "name": "amd-cli",
   "description": "Diagnostic utilities for projects using the Asynchronous Module Definition format",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/zship/amd-cli",
   "author": "Zach Shipley <zach@zachshipley.com>",
   "repository": {
@@ -18,7 +18,7 @@
   "preferGlobal": true,
   "dependencies": {
     "glob": "3.x",
-    "libamd": "1.x",
+    "libamd": "2.x",
     "levenshtein": "1.x",
     "mout": "0.x",
     "colors": "0.6.x",

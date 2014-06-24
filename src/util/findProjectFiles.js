@@ -63,7 +63,11 @@ var findProjectFiles = function(rjsconfig) {
 	files = linearize(files.map(function(file) {
 		return getDependencyGraph(rjsconfig, file);
 	})).map(function(node) {
-		return node.file;
+		if (node.resolved) {
+			return node.file;
+		}
+	}).filter(function(file) {
+		return !!file;
 	});
 
 	files = difference(files, excludeShallow);
