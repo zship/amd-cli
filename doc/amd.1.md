@@ -81,7 +81,9 @@ IDENTIFIER TERMINOLOGY
 
 * <pool>:
   One or more <module>s to indicate files inside your project (as opposed to
-  your project's dependencies). Shell globbing works as expected. Commands like
+  your project's dependencies). Shell globbing works as expected. If a
+  directory is specified, it will be expanded to '<directory>/\*\*/\*.js' (i.e.
+  find all JavaScript files under the directory). Commands like
   `amd-whatrequires` use <pool> to restrict their search to a manageable
   subset. *May be omitted* if your RequireJS configuration uses
   optimizer-specific options like `include` and `modules`.
