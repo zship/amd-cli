@@ -33,7 +33,6 @@ var parseConfig = function() {
 	var opts = parseOpts(_opts, args, 0);
 
 	var rjsconfig = {};
-	rjsconfig.baseUrl = process.cwd();
 
 	if (opts.config) {
 		if (!fs.existsSync(opts.config)) {
@@ -55,14 +54,15 @@ var parseConfig = function() {
 		rjsconfig = mixin({}, dotAmdConfig, rjsconfig);
 	}
 
-	if (opts['entry-point']) {
-		rjsconfig.baseUrl = path.resolve(opts['entry-point'], rjsconfig.baseUrl);
-	}
+	opts['entry-point'] = opts['entry-point'] || process.cwd();
+	rjsconfig.baseUrl = path.resolve(opts['entry-point'], rjsconfig.baseUrl.replace(/^\//, ''));
 
 	if (!fs.existsSync(rjsconfig.baseUrl)) {
-		throw new Error('RequireJS baseUrl "' + rjsconfig.baseUrl + '" does not resolve to a real path!');
+		log.warn('RequireJS baseUrl "' + rjsconfig.baseUrl + '" does not resolve to a real path! Using current working directory, but this may not be intended.');
+		rjsconfig.baseUrl = process.cwd();
 	}
 
+	log.verbose.writeln('Entry point: ' + opts['entry-point']);
 	log.verbose.writeln('RequireJS configuration:');
 	log.verbose.write(JSON.stringify(rjsconfig, false, 4) + '\n\n');
 
