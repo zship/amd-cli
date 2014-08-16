@@ -75,7 +75,9 @@ var resolveFileArgs = function(files, rjsconfig, recursive) {
 		files = unique(flattened);
 	}
 
-	files = compact(files);
+	files = compact(files).filter(function(f) {
+		return (f.search(/\?\?/g) === -1);
+	});
 
 	if (!files.length) {
 		log.error('Invalid files or module IDs were passed!');
