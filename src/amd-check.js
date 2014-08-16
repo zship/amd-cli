@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var path = require('path');
 
 var findBrokenDependencies = require('libamd/findBrokenDependencies');
@@ -25,10 +26,10 @@ var _opts = mixin(commonOpts, {
 });
 
 
-var check = function() {
+var check = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-	var rjsconfig = parseConfig();
+	var rjsconfig = yield parseConfig();
 
 	var fileArgs = opts.argv.remain;
 	if (!fileArgs.length) {
@@ -85,7 +86,7 @@ var check = function() {
 	if (hasErrors) {
 		process.exit(2);
 	}
-};
+});
 
 
 module.exports = check;

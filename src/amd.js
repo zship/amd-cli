@@ -73,7 +73,9 @@ var cli = function() {
 		return;
 	}
 
-	require(scripts[task])();
+	require(scripts[task])().catch(function(err) {
+		log.error(err.stack);
+	});
 
 };
 

@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var path = require('path');
 
 var normalize = require('libamd/modules/normalize');
@@ -40,11 +41,10 @@ var _opts = mixin(commonOpts, {
 });
 
 
-var unused = function() {
+var unused = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-
-	var rjsconfig = parseConfig();
+	var rjsconfig = yield parseConfig();
 
 	var fileArgs = opts.argv.remain;
 	if (!fileArgs.length) {
@@ -84,7 +84,7 @@ var unused = function() {
 		log.writeln(file);
 	});
 
-};
+});
 
 
 module.exports = unused;

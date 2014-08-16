@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-var log = require('../src/util/log');
+require('traceur');
+var log = require('../lib/util/log');
 try {
-	require('../src/amd.js').cli();
+	require('../lib/amd.js').cli();
 }
 catch (e) {
 	log.error(e.stack);

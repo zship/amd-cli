@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var map = require('mout/object/map');
 var values = require('mout/object/values');
 var flatten = require('mout/array/flatten');
@@ -71,10 +72,10 @@ var _groupsOf = function(cycles, num) {
 };
 
 
-var circulars = function() {
+var circulars = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-	var rjsconfig = parseConfig();
+	var rjsconfig = yield parseConfig();
 
 	var fileArgs = opts.argv.remain;
 	if (!fileArgs.length) {
@@ -144,7 +145,7 @@ var circulars = function() {
 			log.writeln();
 		});
 
-};
+});
 
 
 module.exports = circulars;

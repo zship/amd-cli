@@ -1,0 +1,17 @@
+#!/bin/bash
+
+src="$1"
+target="$2"
+
+
+main() {
+	./node_modules/traceur/traceur \
+	--block-binding=parse \
+	--script "$src" \
+	--out "$target"
+
+	echo "$src -> $target"
+}
+
+
+main "$@"

@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var readline = require('readline');
 var stream = require('stream');
 
@@ -17,10 +18,10 @@ var log = require('./util/log');
 var _opts = mixin(commonOpts, {});
 
 
-var normalize = function() {
+var normalize = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-	var rjsconfig = parseConfig();
+	var rjsconfig = yield parseConfig();
 
 	if (opts.argv.remain.length) {
 		var files = resolveFileArgs(opts.argv.remain, rjsconfig);
@@ -39,7 +40,7 @@ var normalize = function() {
 			log.writeln(_normalize(rjsconfig, line));
 		});
 	}
-};
+});
 
 
 module.exports = normalize;

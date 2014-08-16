@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var path = require('path');
 
 var normalize = require('libamd/modules/normalize');
@@ -37,10 +38,10 @@ var _opts = mixin(commonOpts, {
 });
 
 
-var amdGraph = function() {
+var amdGraph = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-	var rjsconfig = parseConfig();
+	var rjsconfig = yield parseConfig();
 	var files = resolveFileArgs(opts.argv.remain, rjsconfig);
 
 	var nodes = [];
@@ -92,7 +93,7 @@ var amdGraph = function() {
 			});
 		}
 	});
-};
+});
 
 
 module.exports = amdGraph;

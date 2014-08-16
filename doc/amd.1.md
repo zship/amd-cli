@@ -38,6 +38,12 @@ These options are applicable to almost all commands:
   commonly needed property, so it can be set here for convenience. --base-url
   will override any `baseUrl` property gotten from --config.
 
+* -e <path>, --entry-point=<path>:
+  The filesystem path representing your web server's root directory, to which
+  --base-url is relative. This can be useful when using the --config option, as
+  it allows you to re-use the same configuration you use in production without
+  modifying any paths.
+
 
 COMMANDS
 --------
@@ -101,6 +107,37 @@ higher precedence).
 
 `amd` searches for this file starting from the current working directory all
 the way up to '/'.  Your project's root is a good place to put it.
+
+
+AUTOMATIC CONFIGURATION
+-----------------------
+
+If no **.amdconfig** file is found and no --base-url, --config, or
+--entry-point options are present, `amd` will fall back to a heuristic method
+for finding your configuration. The procedure is as follows:
+
+1. Find the project root. Looks upward from your current working directory for
+   several common files (.git, package.json, bower.json, etc.) and uses the
+   first-found's parent directory.
+
+2. Find a file under the project root containing the string "require.config("
+   and use this as the --config option. If this is a git repository, use
+   .gitignore rules to exclude files that aren't yours (node_modules,
+   bower_components, generated files, etc.). After that, assume the shortest
+   matching file is the likeliest candidate for config that you wrote.
+
+3. Take --base-url from the config file found in step #2. Determine
+   --entry-point by taking the absolute path to the config file and looking for
+   a directory (string-)matching --base-url, then using its parent directory.
+
+The conditions to trigger automatic configuration are intentionally strict
+(essentially only if you tell `amd` nothing at all about your project). It
+works reasonably well and reasonably quickly, but is as error-prone as any
+heuristic method. It's mainly intended for having a shot at getting
+up-and-running with a foreign codebase quickly. If it works, great!; you can
+now use `amd` commands to (hopefully) help you paint a picture with less
+effort! If you use the --verbose option, `amd` will also show you what guesses
+are being made.
 
 
 REQUIREJS CONFIGURATION

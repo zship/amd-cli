@@ -1,6 +1,7 @@
 'use strict';
 
 
+var Q = require('q');
 var path = require('path');
 
 var normalize = require('libamd/modules/normalize');
@@ -39,12 +40,11 @@ var _opts = mixin(commonOpts, {
 });
 
 
-var whatrequires = function() {
+var whatrequires = Q.async(function*() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
-
+	var rjsconfig = yield parseConfig();
 	var remain = opts.argv.remain;
-	var rjsconfig = parseConfig();
 
 	var needle = resolveFileArgs(remain[0], rjsconfig)[0];
 	var haystackArg = remain.slice(1);
@@ -91,7 +91,7 @@ var whatrequires = function() {
 		}
 		log.writeln(dep.parent);
 	});
-};
+});
 
 
 module.exports = whatrequires;

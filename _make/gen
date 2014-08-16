@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+
+
+def parse_args(argv):
+	parser = argparse.ArgumentParser(
+		prog='generate-targets',
+		description='Generate Makefile targets for individual files',
+		add_help=False
+	)
+	parser.add_argument(
+		'-t', '--targets',
+		help='Makefile targets'
+	)
+	parser.add_argument(
+		'-d', '--dependencies',
+		help='Dependencies of the given --targets'
+	)
+	parser.add_argument(
+		'-c', '--cmd',
+		help='Command to run to generate each target from each dependency'
+	)
+	parser.add_argument(
+		'-?', '--help',
+		action='help',
+		help='show this help message and exit'
+	)
+	return parser.parse_args(args=argv[1:])
+
+
+def main(argv=None):
+	argv = argv or sys.argv
+	args = parse_args(argv)
+
+	args.dependencies = args.dependencies.split(' ')
+	args.targets = args.targets.split(' ')
+
+	for i, t in enumerate(args.targets):
+		d = args.dependencies[i]
+		print '{t}: {d}'.format(t=t, d=d)
+		print '\t@mkdir -p $(@D); {}'.format(args.cmd)
+		print ''
+
+
+if __name__ == "__main__":
+    main()

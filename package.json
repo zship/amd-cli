@@ -1,32 +1,34 @@
 {
-  "name": "amd-cli",
-  "description": "Diagnostic utilities for projects using the Asynchronous Module Definition format",
-  "version": "2.2.3",
-  "homepage": "https://github.com/zship/amd-cli",
-  "author": "Zach Shipley <zach@zachshipley.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zship/amd-cli"
-  },
-  "license": "MIT",
-  "bin": {
-    "amd": "bin/amd"
-  },
-  "directories": {
-    "man": "./man"
-  },
-  "preferGlobal": true,
-  "dependencies": {
-    "glob": "3.x",
-    "libamd": "2.x",
-    "levenshtein": "1.x",
-    "mout": "0.x",
-    "colors": "0.6.x",
-    "nopt": "2.1.x"
-  },
-  "keywords": [
-    "amd",
-    "diagnostic",
-    "cli"
-  ]
+	"name": "amd-cli",
+	"description": "Diagnostic utilities for projects using the Asynchronous Module Definition format",
+	"version": "2.3.0",
+	"homepage": "https://github.com/zship/amd-cli",
+	"author": "Zach Shipley <zach@zachshipley.com>",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zship/amd-cli"
+	},
+	"license": "MIT",
+	"bin": {
+		"amd": "bin/amd"
+	},
+	"directories": {
+		"man": "./man"
+	},
+	"preferGlobal": true,
+	"dependencies": {
+		"q": "1.0.1",
+		"traceur": "0.0.55",
+		"glob": "3.2.11",
+		"libamd": "2.x",
+		"levenshtein": "1.0.4",
+		"mout": "0.9.1",
+		"colors": "0.6.2",
+		"nopt": "2.1.2"
+	},
+	"keywords": [
+		"amd",
+		"diagnostic",
+		"cli"
+	]
 }
