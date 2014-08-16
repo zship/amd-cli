@@ -5,14 +5,16 @@ var readline = require('readline');
 var stream = require('stream');
 
 var _resolve = require('libamd/modules/resolve');
+var mixin = require('mout/object/mixIn');
 
+var commonOpts = require('./util/commonOpts');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var log = require('./util/log');
 
 
-var _opts = {};
+var _opts = mixin(commonOpts, {});
 
 
 var resolve = function() {

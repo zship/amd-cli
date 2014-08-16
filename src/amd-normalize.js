@@ -4,15 +4,17 @@
 var readline = require('readline');
 var stream = require('stream');
 
+var mixin = require('mout/object/mixIn');
 var _normalize = require('libamd/modules/normalize');
 
+var commonOpts = require('./util/commonOpts');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var log = require('./util/log');
 
 
-var _opts = {};
+var _opts = mixin(commonOpts, {});
 
 
 var normalize = function() {

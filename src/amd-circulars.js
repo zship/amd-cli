@@ -4,6 +4,7 @@
 var map = require('mout/object/map');
 var values = require('mout/object/values');
 var flatten = require('mout/array/flatten');
+var mixin = require('mout/object/mixIn');
 
 var findCircularDependencies = require('libamd/findCircularDependencies');
 var normalize = require('libamd/modules/normalize');
@@ -12,6 +13,7 @@ var rotateUntil = require('libamd/cycles/rotateUntil');
 var contains = require('libamd/cycles/contains');
 var unique = require('libamd/cycles/unique');
 
+var commonOpts = require('./util/commonOpts');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
@@ -19,12 +21,12 @@ var findProjectFiles = require('./util/findProjectFiles');
 var log = require('./util/log');
 
 
-var _opts = {
+var _opts = mixin(commonOpts, {
 	'group': {
 		type: Number,
 		shortHand: 'g'
 	}
-};
+});
 
 
 var _groupsOf = function(cycles, num) {

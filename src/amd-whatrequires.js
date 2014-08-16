@@ -8,6 +8,7 @@ var resolve = require('libamd/modules/resolve');
 var getDependencies = require('libamd/getDependencies');
 var mixin = require('mout/object/mixIn');
 
+var commonOpts = require('./util/commonOpts');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
@@ -16,7 +17,7 @@ var log = require('./util/log');
 var offsetToLoc = require('./util/offsetToLoc');
 
 
-var _opts = {
+var _opts = mixin(commonOpts, {
 	'location': {
 		type: Boolean,
 		shortHand: 'l',
@@ -35,7 +36,7 @@ var _opts = {
 		shortHand: 'R',
 		description: 'Recurse into the full dependency graph of each passed <module>, adding each dependency into the <module> list'
 	}
-};
+});
 
 
 var whatrequires = function() {

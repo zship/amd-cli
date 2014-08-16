@@ -6,15 +6,17 @@ var path = require('path');
 var normalize = require('libamd/modules/normalize');
 var getDependencyGraph = require('libamd/getDependencyGraph');
 var linearize = require('libamd/graphs/linearize');
+var mixin = require('mout/object/mixIn');
 require('colors');
 
+var commonOpts = require('./util/commonOpts');
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
 var resolveFileArgs = require('./util/resolveFileArgs');
 var log = require('./util/log');
 
 
-var _opts = {
+var _opts = mixin(commonOpts, {
 	'dot': {
 		type: Boolean
 	},
@@ -32,7 +34,7 @@ var _opts = {
 	'resolve': {
 		type: Boolean
 	}
-};
+});
 
 
 var amdGraph = function() {
