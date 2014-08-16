@@ -1,6 +1,9 @@
 'use strict';
 
 
+var readline = require('readline');
+var stream = require('stream');
+
 var _normalize = require('libamd/modules/normalize');
 
 var parseOpts = require('./util/parseOpts');
@@ -16,11 +19,24 @@ var normalize = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
 	var rjsconfig = parseConfig();
-	var files = resolveFileArgs(opts.argv.remain, rjsconfig);
 
-	files.forEach(function(file) {
-		log.writeln(_normalize(rjsconfig, file));
-	});
+	if (opts.argv.remain.length) {
+		var files = resolveFileArgs(opts.argv.remain, rjsconfig);
+
+		files.forEach(function(file) {
+			log.writeln(_normalize(rjsconfig, file));
+		});
+	}
+	else {
+		var rl = readline.createInterface({
+			input: process.stdin,
+			output: new stream()
+		});
+
+		rl.on('line', function(line){
+			log.writeln(_normalize(rjsconfig, line));
+		});
+	}
 };
 
 

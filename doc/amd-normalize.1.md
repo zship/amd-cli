@@ -5,7 +5,7 @@ amd-normalize(1) -- canonicalize a module name
 SYNOPSIS
 --------
 
-`amd normalize` <module>...  [-v|--(no-)verbose] [-c|--config=<path>]
+`amd normalize` [<module>...]  [-v|--(no-)verbose] [-c|--config=<path>]
                 [-b|--base-url=<url>]
 
 
@@ -17,6 +17,8 @@ to "module IDs". These are canonicalized file names relative to --base-url or
 otherwise transformed by your RequireJS configuration's `paths` property. This
 is the usual way to express module names (e.g. "mout/lang/clone" as opposed to
 "../lang/clone").
+
+If <module> is not specified, `amd normalize` will read from stdin.
 
 
 SHARED OPTIONS
@@ -46,6 +48,9 @@ EXAMPLES
 
 * amd normalize ./src/app/util/log
   If your --base-url was "src", this would output "app/util/log".
+
+* find src -name \*.js | amd normalize
+  For each line of `find`'s output, returns the normalized module name.
 
 
 AMD

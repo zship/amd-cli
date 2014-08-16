@@ -1,7 +1,10 @@
 'use strict';
 
 
-var resolve = require('libamd/modules/resolve');
+var readline = require('readline');
+var stream = require('stream');
+
+var _resolve = require('libamd/modules/resolve');
 
 var parseOpts = require('./util/parseOpts');
 var parseConfig = require('./util/parseConfig');
@@ -16,11 +19,24 @@ var resolve = function() {
 	var args = process.argv.slice(3);
 	var opts = parseOpts(_opts, args, 0);
 	var rjsconfig = parseConfig();
-	var files = resolveFileArgs(opts.argv.remain, rjsconfig);
 
-	files.forEach(function(file) {
-		log.writeln(file);
-	});
+	if (opts.argv.remain.length) {
+		var files = resolveFileArgs(opts.argv.remain, rjsconfig);
+
+		files.forEach(function(file) {
+			log.writeln(file);
+		});
+	}
+	else {
+		var rl = readline.createInterface({
+			input: process.stdin,
+			output: new stream()
+		});
+
+		rl.on('line', function(line){
+			log.writeln(_resolve(rjsconfig, line));
+		});
+	}
 };
 
 

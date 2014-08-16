@@ -5,7 +5,7 @@ amd-resolve(1) -- print the absolute file path of a module
 SYNOPSIS
 --------
 
-`amd resolve` <module>...  [-v|--(no-)verbose] [-c|--config=<path>]
+`amd resolve` [<module>...]  [-v|--(no-)verbose] [-c|--config=<path>]
               [-b|--base-url=<url>]
 
 
@@ -14,6 +14,8 @@ DESCRIPTION
 
 `amd resolve` converts module names to absolute file paths using --base-url and
 your RequireJS configuration's `paths` and/or `packages` properties.
+
+If <module> is not specified, `amd normalize` will read from stdin.
 
 
 SHARED OPTIONS
